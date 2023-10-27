@@ -3,6 +3,6 @@ __pycache__/
 *.ipynb_checkpoints
 *.pyc
 *.egg-info/
-SusML/_version.py
+astra/_version.py
 
 /.quarto/

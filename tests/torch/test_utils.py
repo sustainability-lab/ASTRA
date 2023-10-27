@@ -3,8 +3,8 @@ import torch
 import optree
 from torchvision.models import vit_b_16, ViT_B_16_Weights
 
-import susml.torch.models as models
-import susml.torch.utils as utils
+import astra.torch.models as models
+import astra.torch.utils as utils
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

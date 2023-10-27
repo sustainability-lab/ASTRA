@@ -9,4 +9,4 @@ requires = [
 ]
 
 [tool.setuptools_scm]
-write_to = "susml/_version.py"
+write_to = "astra/_version.py"

@@ -1,6 +1,6 @@
 import pytest
 import torch
-import susml.torch.models as models
+import astra.torch.models as models
 from torchvision.models import efficientnet_b0, EfficientNet_B0_Weights, vit_b_16, ViT_B_16_Weights
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
