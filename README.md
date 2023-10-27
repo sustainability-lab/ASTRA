@@ -10,6 +10,10 @@
 pip install astra
 ```
 
+# Contributing
+Please go through the [contributing guidelines](CONTRIBUTING.md) before making a contribution.
+
+
 # Useful Code Snippets
 
 ## Data
@@ -20,22 +24,38 @@ ds, ds_name = load_cifar_10()
 ```
 
 ## Models
-### Initialize MLPs
+### MLPs
 ```python
 from astra.torch.models import MLP
 
 mlp = MLP(input_dim=100, hidden_dims=[128, 64], output_dim=10, activation="relu", dropout=0.1)
 ```
 
-### Initialize CNNs
+### CNNs
 ```python
 from astra.torch.models import CNN
-CNN(image_dim=32, 
-    kernel_size=5, 
-    n_channels=3, 
-    conv_hidden_dims=[32, 64], 
-    dense_hidden_dims=[128, 64], 
-    output_dim=10)
+cnn = CNN(image_dim=32, 
+          kernel_size=5, 
+          n_channels=3, 
+          conv_hidden_dims=[32, 64], 
+          dense_hidden_dims=[128, 64], 
+          output_dim=10)
+```
+
+### EfficientNets
+```python
+from torchvision.models import efficientnet_b0, EfficientNet_B0_Weights
+from astra.torch.models import EfficientNet
+
+model = EfficientNet(efficientnet_b0, EfficientNet_B0_Weights.DEFAULT, output_dim=10)
+```
+
+### ViT
+```python
+from torchvision.models import vit_b_16, ViT_B_16_Weights
+from astra.torch.models import ViT
+
+model = ViT(vit_b_16, ViT_B_16_Weights.DEFAULT, output_dim=10)
 ```
 
 ## Training
@@ -51,4 +71,26 @@ print(result.keys()) # dict_keys(['epoch_losses', 'iter_losses'])
 ```python
 from astra.torch.utils import count_params
 n_params = count_params(mlp)
+```
+
+### Flatten/Unflatten the weights of a model
+```python
+import torch
+from astra.torch.models import ViT
+from torchvision.models import vit_b_16, ViT_B_16_Weights
+from astra.torch.utils import ravel_pytree
+import optree
+
+model = ViT(vit_b_16, ViT_B_16_Weights.DEFAULT, output_dim=10)
+params = dict(model.named_parameters())
+
+flat_params, unravel_fn = ravel_pytree(params)
+unraveled_params = unravel_fn(flat_params) # returns the original params
+
+# check if the tree structure is preserved
+assert optree.tree_structure(params) == optree.tree_structure(unraveled_params)
+
+# check if the values are preserved
+for before_leaf, after_leaf in zip(optree.tree_leaves(params), optree.tree_leaves(unraveled_params)):
+    assert torch.all(before_leaf == after_leaf)
 ```
