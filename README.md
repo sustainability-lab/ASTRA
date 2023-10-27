@@ -2,8 +2,8 @@
 "**A**I for **S**ustainability" **T**oolkit for **R**esearch and **A**nalysis. ASTRA (अस्त्र) means "a weapon" in Sanskrit, Hindi and a few other Bharatiya languages.
 
 ![Python version](https://img.shields.io/badge/Python-3.9%2B-brightgreen)
-[![CI](https://github.com/sustainability-lab/ASTRA/workflows/CI/badge.svg?branch=main)](https://github.com/sustainability-lab/ASTRA/actions?query=workflow%3ACI)
-[![Coverage Status](https://coveralls.io/repos/github/sustainability-lab/ASTRA/badge.svg?branch=master)](https://coveralls.io/github/sustainability-lab/ASTRA?branch=master)
+[![CI](https://github.com/sustainability-lab/ASTRA/actions/workflows/CI.yml/badge.svg)](https://github.com/sustainability-lab/ASTRA/actions/workflows/CI.yml)
+[![Coverage Status](https://coveralls.io/repos/github/sustainability-lab/ASTRA/badge.svg?branch=main)](https://coveralls.io/github/sustainability-lab/ASTRA?branch=main)
 
 # Install
 ```bash
