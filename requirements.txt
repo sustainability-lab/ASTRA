@@ -1,1 +1,18 @@
+# The following libraries are not added because they should be installed separately with care.
+# torch 
+# torchvision
+# jax
+# jaxlib
+# tensorflow
+
+# Basic libraries
 numpy
+pandas
+matplotlib
+xarray
+
+# Interactive
+tqdm
+
+# PyTree
+optree
