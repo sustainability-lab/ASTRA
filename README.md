@@ -3,6 +3,11 @@
 ![Build](https://img.shields.io/github/actions/workflow/status/sustainability-lab/SusML/build.yml?label=build&logo=github)
 ![Tests](https://img.shields.io/github/actions/workflow/status/sustainability-lab/SusML/tests.yml?label=tests&logo=github)
 
+# Install
+```bash
+pip install susml
+```
+
 # Useful Code Snippets
 
 ## Data
