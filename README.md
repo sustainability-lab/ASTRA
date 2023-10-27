@@ -42,6 +42,6 @@ print(result.keys()) # dict_keys(['epoch_losses', 'iter_losses'])
 ## Adhoc
 ### Count number of parameters in a model
 ```python
-from susml.torch.utils import count_parameters
+from susml.torch.utils import count_params
 n_params = count_params(mlp)
 ```
