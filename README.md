@@ -42,7 +42,7 @@ CNN(image_dim=32,
 ### Quick train a model
 ```python
 from astra.torch.utils import train_fn
-result = train(model, inputs, outputs, loss_fn, lr, n_epochs, batch_size, enable_tqdm=True)
+result = train_fn(model, inputs, outputs, loss_fn, lr, n_epochs, batch_size, enable_tqdm=True)
 print(result.keys()) # dict_keys(['epoch_losses', 'iter_losses'])
 ```
 
