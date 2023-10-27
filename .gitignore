@@ -6,3 +6,6 @@ __pycache__/
 astra/_version.py
 
 /.quarto/
+
+# data directories
+data/
