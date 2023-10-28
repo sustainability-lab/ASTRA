@@ -6,9 +6,17 @@
 [![Coverage Status](https://coveralls.io/repos/github/sustainability-lab/ASTRA/badge.svg?branch=main)](https://coveralls.io/github/sustainability-lab/ASTRA?branch=main)
 
 # Install
+
+Stable version:
 ```bash
 pip install astra-lib
 ```
+
+Latest version:
+```bash
+pip install git+https://github.com/sustainability-lab/ASTRA
+```
+
 
 # Contributing
 Please go through the [contributing guidelines](CONTRIBUTING.md) before making a contribution.
