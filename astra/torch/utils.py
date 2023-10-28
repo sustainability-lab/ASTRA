@@ -18,12 +18,13 @@ def train_fn(model, inputs, output, loss_fn, lr, n_epochs, batch_size=None, enab
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
     iter_losses = []
-    epochs_losses = []
+    epoch_losses = []
+    outer_loop = range(n_epochs)
     if enable_tqdm:
-        loop = tqdm(range(n_epochs))
-    else:
-        loop = range(n_epochs)
-    for _ in loop:
+        pbar = tqdm(total=len(data_loader) * n_epochs)
+        n_processed = 0
+
+    for _ in outer_loop:
         loss_value = 0.0
         for x, y in data_loader:
             optimizer.zero_grad()
@@ -33,11 +34,33 @@ def train_fn(model, inputs, output, loss_fn, lr, n_epochs, batch_size=None, enab
             optimizer.step()
             iter_losses.append(loss.item())
             loss_value += loss.item()
-        epochs_losses.append(loss_value / len(data_loader))
-        if enable_tqdm:
-            loop.set_description(f"Loss: {loss.item():.6f}")
+            if enable_tqdm:
+                n_processed += len(x)
+                pbar.update(1)
+                pbar.set_description(f"Loss: {loss.item():.6f}")
 
-    return {"iter_losses": iter_losses, "epochs_losses": epochs_losses}
+        epoch_losses.append(loss_value / len(data_loader))
+
+    return {"iter_losses": iter_losses, "epoch_losses": epoch_losses}
+
+
+def predict_class(model, inputs, batch_size=None):
+    """Generic predict function for classification models.
+    Note that we assume that the model predicts the logits of size `n_classes` even for the binary classification case.
+    """
+    if batch_size is None:
+        batch_size = len(inputs)
+
+    data_loader = DataLoader(TensorDataset(inputs), batch_size=batch_size, shuffle=False)
+
+    model.eval()
+    with torch.no_grad():
+        preds = []
+        for x in tqdm(data_loader):
+            pred = model(x[0])
+            preds.append(pred)
+        pred = torch.cat(preds)
+    return pred.argmax(dim=1)
 
 
 def ravel_pytree(pytree):

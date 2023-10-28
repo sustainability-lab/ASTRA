@@ -1,19 +1,18 @@
-import numpy as np
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 
 from astra.torch.al import Strategy
 
-from typing import Sequence, Dict, Union, List
+from typing import Sequence, Dict
 
 
 class DiversityStrategy(Strategy):
     def query(
         self,
         net: nn.Module,
-        pool_indices: Union[List[int], np.ndarray, torch.Tensor],
-        context_indices: Union[List[int], np.ndarray, torch.Tensor] = None,
+        pool_indices: torch.Tensor,
+        context_indices: torch.Tensor = None,
         n_query_samples: int = 1,
         n_mc_samples: int = None,
         batch_size: int = None,
@@ -31,6 +30,11 @@ class DiversityStrategy(Strategy):
         Returns:
             best_indices: A dictionary of acquisition names and the corresponding best indices.
         """
+        assert isinstance(pool_indices, torch.Tensor), f"pool_indices must be a torch.Tensor, got {type(pool_indices)}"
+        assert isinstance(
+            context_indices, torch.Tensor
+        ), f"context_indices must be a torch.Tensor, got {type(context_indices)}"
+
         if batch_size is None:
             batch_size = len(pool_indices)
 
@@ -57,10 +61,11 @@ class DiversityStrategy(Strategy):
                 # TODO: We can make this loop faster by computing scores only for updated indices. There can be a method in acquisition to update the scores.
                 for _ in range(n_query_samples):
                     scores = acquisition.acquire_scores(features, pool_indices, context_indices)
-                    best_index = torch.argmax(scores)
-                    selected_indices.append(best_index)
-                    pool_indices.pop(best_index)
-                    context_indices.append(best_index)
+                    index = torch.argmax(scores)
+                    selected_index = pool_indices[index]
+                    selected_indices.append(selected_index)
+                    pool_indices = torch.cat([pool_indices[:index], pool_indices[index + 1 :]])
+                    context_indices = torch.cat([context_indices, selected_index])
                 selected_indices = torch.tensor(selected_indices, device=self.device)
                 best_indices[acq_name] = selected_indices
 

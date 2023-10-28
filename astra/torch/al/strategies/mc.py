@@ -6,15 +6,15 @@ from torch.utils.data import DataLoader
 
 from astra.torch.al import Strategy
 
-from typing import Sequence, Dict, Union, List
+from typing import Sequence, Dict
 
 
 class MCStrategy(Strategy):
     def query(
         self,
         net: nn.Module,
-        pool_indices: Union[List[int], np.ndarray, torch.Tensor],
-        context_indices: Union[List[int], np.ndarray, torch.Tensor] = None,
+        pool_indices: torch.Tensor,
+        context_indices: torch.Tensor = None,
         n_query_samples: int = 1,
         n_mc_samples: int = 10,
         batch_size: int = None,
@@ -32,6 +32,8 @@ class MCStrategy(Strategy):
         Returns:
             best_indices: A dictionary of acquisition names and the corresponding best indices.
         """
+        assert isinstance(pool_indices, torch.Tensor), f"pool_indices must be a torch.Tensor, got {type(pool_indices)}"
+
         if batch_size is None:
             batch_size = len(pool_indices)
 
@@ -55,7 +57,8 @@ class MCStrategy(Strategy):
             best_indices = {}
             for acq_name, acquisition in self.acquisitions.items():
                 scores = acquisition.acquire_scores(logits)
-                selected_indices = torch.topk(scores, n_query_samples).indices
+                index = torch.topk(scores, n_query_samples).indices
+                selected_indices = pool_indices[index]
                 best_indices[acq_name] = selected_indices
 
         return best_indices
