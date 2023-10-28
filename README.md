@@ -1,5 +1,5 @@
 # ASTRA
-"**A**I for **S**ustainability" **T**oolkit for **R**esearch and **A**nalysis. ASTRA (अस्त्र) means "a weapon" in Sanskrit, Hindi and a few other Bharatiya languages.
+"**A**I for **S**ustainability" **T**oolkit for **R**esearch and **A**nalysis. ASTRA (अस्त्र) means a "tool" or "a weapon" in Sanskrit.
 
 ![Python version](https://img.shields.io/badge/Python-3.9%2B-brightgreen)
 [![CI](https://github.com/sustainability-lab/ASTRA/actions/workflows/CI.yml/badge.svg)](https://github.com/sustainability-lab/ASTRA/actions/workflows/CI.yml)
