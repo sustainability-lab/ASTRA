@@ -9,7 +9,9 @@ class MaxEntropy(EnsembleAcquisition, MCAcquisition):
 
         if isinstance(self,EnsembleAcquisition):
             #calculate entropy for each pool datapoint for each model
-            entropy=-torch.sum(logits*torch.log(logits),dim=2)
+            probs=torch.softmax(logits,dim=2)
+            entropy=-torch.sum(probs*torch.log(probs),dim=2)
+
 
             score=torch.sum(entropy,dim=0)
 
@@ -17,7 +19,9 @@ class MaxEntropy(EnsembleAcquisition, MCAcquisition):
         
         elif isinstance(self,MCAcquisition):
             #calculate entropy for each pool datapoint accross all Monte Carlo samples  
-            entropy=-torch.sum(logits*torch.log(logits),dim=2)
+            probs = torch.softmax(logits, dim=2)
+            
+            entropy=-torch.sum(probs*torch.log(probs),dim=2)
 
             score=torch.mean(entropy,dim=0)
 
