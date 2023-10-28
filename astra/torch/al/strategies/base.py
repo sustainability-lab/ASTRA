@@ -38,6 +38,7 @@ class Strategy(ABC, nn.Module):
             acquisitions = [acquisitions]
         self.acquisitions = {acq.__class__.__name__: acq for acq in acquisitions}
 
+    @property
     def device(self):
         return self.dummy_param.device
 

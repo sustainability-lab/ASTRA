@@ -47,7 +47,7 @@ class MCStrategy(Strategy):
         with torch.no_grad():
             logits_list = []
             for x, _ in data_loader:
-                vx = x[np.newaxis, ...].repeat(*repeats).to(self.device())
+                vx = x[np.newaxis, ...].repeat(*repeats).to(self.device)
                 logits = torch.vmap(net, randomness="different")(vx)
                 logits_list.append(logits)
             logits = torch.cat(logits_list, dim=1)  # (n_mc_samples, pool_dim, n_classes)

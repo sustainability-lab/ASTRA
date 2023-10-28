@@ -45,7 +45,7 @@ class EnsembleStrategy(Strategy):
             for x, _ in data_loader:
                 net_logits_list = []
                 for model in net:
-                    net_logits = model(x.to(self.device()))[np.newaxis, ...]
+                    net_logits = model(x.to(self.device))[np.newaxis, ...]
                     net_logits_list.append(net_logits)
                 logits = torch.cat(net_logits_list, dim=0)  # (n_nets, batch_dim, n_classes)
                 logits_list.append(logits)

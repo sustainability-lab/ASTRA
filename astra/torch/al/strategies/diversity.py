@@ -47,11 +47,16 @@ class DiversityStrategy(Strategy):
             # Get the features for the context
             context_features_list = []
             for x, _ in context_data_loader:
-                context_features = net(x)
+                context_features = net(x.to(self.device))
                 context_features_list.append(context_features)
             context_features = torch.cat(context_features_list, dim=0)  # (context_dim, feature_dim)
 
             best_indices = {}
+            # TODO: Fix this for loop to do the following:
+            #    - Get the max score. Get corresponding index.
+            #    - Add that index to selected_indices and also to pool indices.
+            #    - Remove that index from pool indices.
+            #    - Repeat until len(selected_indices) == n_query_samples.
             for acq_name, acquisition in self.acquisitions.items():
                 scores = acquisition.acquire_scores(pool_features, context_features)
                 selected_indices = torch.topk(scores, n_query_samples).indices
