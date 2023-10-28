@@ -1,8 +1,10 @@
+import pytest
+
 import torch
 from torchvision.datasets import CIFAR10
 
 from astra.torch.models import CNN
-from astra.torch.al import RandomAcquisition, RandomStrategy
+from astra.torch.al import RandomAcquisition, RandomStrategy, EnsembleAcquisition
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

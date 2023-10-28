@@ -4,12 +4,33 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 
-from astra.torch.al import Strategy
+from astra.torch.al.strategies.base import Strategy
+from astra.torch.al.acquisitions.base import EnsembleAcquisition
+from astra.torch.al.errors import AcquisitionMismatchError
 
-from typing import Sequence, Dict
+from typing import Sequence, Dict, Union
 
 
 class EnsembleStrategy(Strategy):
+    def __init__(
+        self,
+        acquisitions: Union[EnsembleAcquisition, Sequence[EnsembleAcquisition]],
+        inputs: torch.Tensor,
+        outputs: torch.Tensor,
+    ):
+        """Base class for query strategies
+
+        Args:
+            acquisitions: A sequence of acquisition functions.
+            inputs: A tensor of inputs.
+            outputs: A tensor of outputs.
+        """
+        super().__init__(acquisitions, inputs, outputs)
+
+        for name, acquisition in self.acquisitions.items():
+            if not isinstance(acquisition, EnsembleAcquisition):
+                raise AcquisitionMismatchError(EnsembleAcquisition, acquisition)
+
     def query(
         self,
         net: torch.Tensor,

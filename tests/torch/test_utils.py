@@ -56,6 +56,6 @@ def test_train_fn():
     loss_fn = torch.nn.CrossEntropyLoss()
     result = utils.train_fn(model, inputs.to(device), outputs.to(device), loss_fn, lr, n_epochs)
 
-    assert result["epochs_losses"][-1] < result["epochs_losses"][0], "Loss should decrease"
+    assert result["epoch_losses"][-1] < result["epoch_losses"][0], "Loss should decrease"
     assert len(result["iter_losses"]) == n_epochs
-    assert len(result["epochs_losses"]) == n_epochs
+    assert len(result["epoch_losses"]) == n_epochs

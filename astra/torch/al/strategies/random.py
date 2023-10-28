@@ -1,12 +1,33 @@
 import numpy as np
 import torch
 import torch.nn as nn
-from astra.torch.al import Strategy
+from astra.torch.al.strategies.base import Strategy
+from astra.torch.al.acquisitions.base import RandomAcquisition
+from astra.torch.al.errors import AcquisitionMismatchError
 
-from typing import Dict
+from typing import Dict, Sequence, Union
 
 
 class RandomStrategy(Strategy):
+    def __init__(
+        self,
+        acquisitions: Union[RandomAcquisition, Sequence[RandomAcquisition]],
+        inputs: torch.Tensor,
+        outputs: torch.Tensor,
+    ):
+        """Base class for query strategies
+
+        Args:
+            acquisitions: A sequence of acquisition functions.
+            inputs: A tensor of inputs.
+            outputs: A tensor of outputs.
+        """
+        super().__init__(acquisitions, inputs, outputs)
+
+        for name, acquisition in self.acquisitions.items():
+            if not isinstance(acquisition, RandomAcquisition):
+                raise AcquisitionMismatchError(RandomAcquisition, acquisition)
+
     def query(
         self,
         net: nn.Module,

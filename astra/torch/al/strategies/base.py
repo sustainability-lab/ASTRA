@@ -5,7 +5,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 from typing import Sequence, Dict
 
-from astra.torch.al import Acquisition
+from astra.torch.al.acquisitions.base import Acquisition
 
 # Base class for query strategies
 
