@@ -9,3 +9,6 @@ astra/_version.py
 
 # data directories
 data/
+
+# distribution directories
+dist/
