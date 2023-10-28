@@ -15,6 +15,12 @@ class Acquisition(ABC):
         raise NotImplementedError("This method must be implemented in a subclass")
 
 
+class DeterministicAcquisition(Acquisition):
+    @abstractmethod
+    def acquire_scores(self, *args, **kwargs):
+        raise NotImplementedError("This method must be implemented in a subclass")
+
+
 class RandomAcquisition(Acquisition):
     def acquire_scores(self, logits: torch.Tensor) -> torch.Tensor:
         # logits shape (n_mc_samples, pool_dim, n_classes)

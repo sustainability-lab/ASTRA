@@ -61,6 +61,9 @@ class DiversityStrategy(Strategy):
 
         data_loader = DataLoader(self.dataset)
 
+        # put model on eval mode
+        net.eval()
+
         with torch.no_grad():
             # Get all features
             features_list = []
