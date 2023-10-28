@@ -6,15 +6,15 @@ from torch.utils.data import DataLoader
 
 from astra.torch.al import Strategy
 
-from typing import Sequence, Dict
+from typing import Sequence, Dict, Union, List
 
 
 class MCStrategy(Strategy):
     def query(
         self,
         net: nn.Module,
-        pool_indices: Sequence[int],
-        context_indices: Sequence[int] = None,
+        pool_indices: Union[List[int], np.ndarray, torch.Tensor],
+        context_indices: Union[List[int], np.ndarray, torch.Tensor] = None,
         n_query_samples: int = 1,
         n_mc_samples: int = 10,
         batch_size: int = None,

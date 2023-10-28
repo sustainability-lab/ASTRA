@@ -6,14 +6,14 @@ from torch.utils.data import DataLoader
 
 from astra.torch.al import Strategy
 
-from typing import Sequence, Dict
+from typing import Sequence, Dict, List, Union
 
 
 class EnsembleStrategy(Strategy):
     def query(
         self,
-        net: Sequence[nn.Module],
-        pool_indices: Sequence[int],
+        net: Union[List[int], np.ndarray, torch.Tensor],
+        pool_indices: Union[List[int], np.ndarray, torch.Tensor],
         context_indices: Sequence[int] = None,
         n_query_samples: int = 1,
         n_mc_samples: int = None,
