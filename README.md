@@ -7,7 +7,7 @@
 
 # Install
 ```bash
-pip install py-astra
+pip install astra-lib
 ```
 
 # Contributing
