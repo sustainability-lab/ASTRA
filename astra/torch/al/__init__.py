@@ -18,8 +18,5 @@ from astra.torch.al.acquisitions.base import (
 
 # Acquisition functions
 from astra.torch.al.acquisitions.uniform_random import UniformRandomAcquisition
-from astra.torch.al.acquisitions.base import RandomAcquisition
 from astra.torch.al.acquisitions.furthest import Furthest
-
-from astra.torch.al.strategies.random import RandomStrategy
-from astra.torch.al.strategies.diversity import DiversityStrategy
+from astra.torch.al.acquisitions.centroid import Centroid
