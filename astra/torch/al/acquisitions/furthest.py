@@ -24,4 +24,3 @@ class Furthest(DiversityAcquisition):
             strategy, X_set=labeled_embeddings, X=unlabeled_embeddings, n=n
         )
         return idxs
-
