@@ -9,12 +9,12 @@ class Mean_std(EnsembleAcquisition,MCAcquisition):
     def acquire_scores(self, logits: torch.Tensor) -> torch.Tensor:
         # Mean-STD acquisition function
         # (n_nets/n_mc_samples, pool_dim, n_classes) logits shape
-        pool_num = logits.shape[1]
         assert len(logits.shape) == 3, "logits shape must be 3-Dimensional"
-        # std = torch.std(logits, dim=0) # standard deviation over model parameters, shape (pool_dim, n_classes)
-        expectaion_of_squared = torch.mean(ab**2,dim=0)
-        expectation_squared = torch.mean(ab,dim=0)**2
+        pool_num = logits.shape[1]
+        softmax_activation = torch.nn.Softmax(dim=2)
+        prob = softmax_activation(logits)
+        expectaion_of_squared = torch.mean(prob**2,dim=0)
+        expectation_squared = torch.mean(prob,dim=0)**2
         std = torch.sqrt(expectation_of_squared - expectation_squared)
         scores = torch.mean(std, dim=1) # mean over classes, shape (pool_dim)
-        assert len(scores.shape) == 1 and scores.shape[0]==pool_num, "scores shape must be 1-Dimensional and must have length equal to that of pool dataset"
         return scores
