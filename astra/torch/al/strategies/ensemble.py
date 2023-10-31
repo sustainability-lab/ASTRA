@@ -33,7 +33,7 @@ class EnsembleStrategy(Strategy):
 
     def query(
         self,
-        net: torch.Tensor,
+        net: Sequence[torch.Tensor],
         pool_indices: torch.Tensor,
         context_indices: Sequence[int] = None,
         n_query_samples: int = 1,
