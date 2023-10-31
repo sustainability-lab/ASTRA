@@ -4,7 +4,7 @@ import torch
 from torchvision.datasets import CIFAR10
 
 from astra.torch.models import CNN
-from astra.torch.al import RandomAcquisition, RandomStrategy, EnsembleAcquisition
+from astra.torch.al import UniformRandomAcquisition, RandomStrategy, EnsembleAcquisition
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -22,7 +22,7 @@ def test_random():
     n_query_samples = 10
 
     # Define the acquisition function
-    acquisition = RandomAcquisition()
+    acquisition = UniformRandomAcquisition()
     strategy = RandomStrategy(acquisition, inputs, outputs)
 
     # Put the strategy on the device
@@ -34,4 +34,4 @@ def test_random():
     # Query the strategy
     best_indices = strategy.query(net, pool_indices, n_query_samples=n_query_samples)
 
-    assert best_indices["RandomAcquisition"].shape == (n_query_samples,)
+    assert best_indices["UniformRandomAcquisition"].shape == (n_query_samples,)
