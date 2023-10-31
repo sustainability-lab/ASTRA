@@ -38,7 +38,8 @@ class DiversityStrategy(Strategy):
         n_mc_samples: int = None,
         batch_size: int = None,
     ) -> Dict[str, torch.Tensor]:
-        """
+        """Diversity query strategy with multiple neural networks
+
         Args:
             net: A neural network to extract features.
             pool_indices: The indices of the pool set.
@@ -64,12 +65,17 @@ class DiversityStrategy(Strategy):
         net.eval()
 
         with torch.no_grad():
-            # Get all features
-            features_list = []
-            for x, _ in data_loader:
-                features = net(x)
-                features_list.append(features)
-            features = torch.cat(features_list, dim=0)  # (data_dim, feature_dim)
+            # Get the features for the pool
+            x_pool, y_pool = data_loader.dataset
+            x_pool = x_pool.permute(0,3,1,2)
+            pool_features = net(x_pool).cpu() # (pool_dim, feature_dim)
+
+            # Get the features for the context
+            x_context, y_context = context_data_loader.dataset
+            x_context = x_context[0]
+            y_context = y_context[0]
+            x_context = x_context.permute(0,3,1,2)            
+            context_features = net(x_context).cpu() # (context_dim, feature_dim)
 
             best_indices = {}
 
@@ -80,16 +86,7 @@ class DiversityStrategy(Strategy):
                 context_indices = context_indices.tolist()
 
             for acq_name, acquisition in self.acquisitions.items():
-                selected_indices = []
-                # TODO: We can make this loop faster by computing scores only for updated indices. There can be a method in acquisition to update the scores.
-                for _ in range(n_query_samples):
-                    scores = acquisition.acquire_scores(features, pool_indices, context_indices)
-                    index = torch.argmax(scores)
-                    selected_index = pool_indices[index]
-                    selected_indices.append(selected_index)
-                    pool_indices = torch.cat([pool_indices[:index], pool_indices[index + 1 :]])
-                    context_indices = torch.cat([context_indices, selected_index])
-                selected_indices = torch.tensor(selected_indices, device=self.device)
+                selected_indices = acquisition.acquire_scores(context_features, pool_features, n_query_samples)
+                selected_indices = torch.tensor(selected_indices)#, device=self.device)
                 best_indices[acq_name] = selected_indices
-
         return best_indices
