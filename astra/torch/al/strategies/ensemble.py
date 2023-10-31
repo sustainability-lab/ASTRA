@@ -52,7 +52,9 @@ class EnsembleStrategy(Strategy):
         Returns:
             best_indices: A dictionary of acquisition names and the corresponding best indices.
         """
-        assert isinstance(pool_indices, torch.Tensor), f"pool_indices must be a torch.Tensor, got {type(pool_indices)}"
+        assert isinstance(
+            pool_indices, torch.Tensor
+        ), f"pool_indices must be a torch.Tensor, got {type(pool_indices)}"
 
         if not isinstance(net, Sequence):
             raise ValueError(f"net must be a sequence of nets, got {type(net)}")
@@ -68,12 +70,14 @@ class EnsembleStrategy(Strategy):
 
         with torch.no_grad():
             logits_list = []
-            for x, _ in data_loader:
+            for x in data_loader:
                 net_logits_list = []
                 for model in net:
                     net_logits = model(x.to(self.device))[np.newaxis, ...]
                     net_logits_list.append(net_logits)
-                logits = torch.cat(net_logits_list, dim=0)  # (n_nets, batch_dim, n_classes)
+                logits = torch.cat(
+                    net_logits_list, dim=0
+                )  # (n_nets, batch_dim, n_classes)
                 logits_list.append(logits)
             logits = torch.cat(logits_list, dim=1)  # (n_nets, pool_dim, n_classes)
 

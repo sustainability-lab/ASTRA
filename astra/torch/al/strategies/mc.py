@@ -52,7 +52,9 @@ class MCStrategy(Strategy):
         Returns:
             best_indices: A dictionary of acquisition names and the corresponding best indices.
         """
-        assert isinstance(pool_indices, torch.Tensor), f"pool_indices must be a torch.Tensor, got {type(pool_indices)}"
+        assert isinstance(
+            pool_indices, torch.Tensor
+        ), f"pool_indices must be a torch.Tensor, got {type(pool_indices)}"
 
         if batch_size is None:
             batch_size = len(pool_indices)
@@ -72,7 +74,9 @@ class MCStrategy(Strategy):
                 vx = x[np.newaxis, ...].repeat(*repeats).to(self.device)
                 logits = torch.vmap(net, randomness="different")(vx)
                 logits_list.append(logits)
-            logits = torch.cat(logits_list, dim=1)  # (n_mc_samples, pool_dim, n_classes)
+            logits = torch.cat(
+                logits_list, dim=1
+            )  # (n_mc_samples, pool_dim, n_classes)
 
             best_indices = {}
             for acq_name, acquisition in self.acquisitions.items():
