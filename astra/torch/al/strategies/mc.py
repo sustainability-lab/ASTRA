@@ -18,7 +18,7 @@ class MCStrategy(Strategy):
         inputs: torch.Tensor,
         outputs: torch.Tensor,
     ):
-        """Base class for query strategies
+        """Monte Carlo Dropout query strategy. See https://arxiv.org/abs/1506.02142 (Dropout as a Bayesian Approximation: Representing Model Uncertainty in Deep Learning)
 
         Args:
             acquisitions: A sequence of acquisition functions.
@@ -40,8 +40,7 @@ class MCStrategy(Strategy):
         n_mc_samples: int = 10,
         batch_size: int = None,
     ) -> Dict[str, torch.Tensor]:
-        """Monte Carlo query strategy
-
+        """
         Args:
             net: A neural network with dropout layers.
             pool_indices: The indices of the pool set.

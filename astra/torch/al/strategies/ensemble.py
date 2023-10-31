@@ -18,7 +18,7 @@ class EnsembleStrategy(Strategy):
         inputs: torch.Tensor,
         outputs: torch.Tensor,
     ):
-        """Base class for query strategies
+        """Ensemble query strategy with multiple neural networks.
 
         Args:
             acquisitions: A sequence of acquisition functions.
@@ -40,8 +40,7 @@ class EnsembleStrategy(Strategy):
         n_mc_samples: int = None,
         batch_size: int = None,
     ) -> Dict[str, torch.Tensor]:
-        """Ensemble query strategy with multiple neural networks
-
+        """
         Args:
             net: A sequence of neural networks.
             pool_indices: The indices of the pool set.

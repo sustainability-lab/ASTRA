@@ -16,7 +16,7 @@ class DiversityStrategy(Strategy):
         inputs: torch.Tensor,
         outputs: torch.Tensor,
     ):
-        """Base class for query strategies
+        """Diversity query strategy to maximize the diversity of the selected samples.
 
         Args:
             acquisitions: A sequence of acquisition functions.
@@ -38,8 +38,7 @@ class DiversityStrategy(Strategy):
         n_mc_samples: int = None,
         batch_size: int = None,
     ) -> Dict[str, torch.Tensor]:
-        """Ensemble query strategy with multiple neural networks
-
+        """
         Args:
             net: A neural network to extract features.
             pool_indices: The indices of the pool set.

@@ -15,7 +15,7 @@ class RandomStrategy(Strategy):
         inputs: torch.Tensor,
         outputs: torch.Tensor,
     ):
-        """Base class for query strategies
+        """Random query strategy to randomly select samples.
 
         Args:
             acquisitions: A sequence of acquisition functions.
@@ -37,8 +37,7 @@ class RandomStrategy(Strategy):
         n_mc_samples: int = None,
         batch_size: int = None,
     ) -> Dict[str, torch.Tensor]:
-        """Random query strategy
-
+        """
         Args:
             net: This argument is ignored.
             pool_indices: The indices of the pool set.
