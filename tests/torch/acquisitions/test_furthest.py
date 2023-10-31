@@ -56,5 +56,3 @@ def test_furthest():
 
     assert best_indices["Furthest"].shape == (n_query_samples,)
 
-
-# test_furthest()
