@@ -5,7 +5,7 @@ from astra.torch.al.aquisition.base import MCAcquisition
 
     
 # maximum mean standard deviation aquisition function
-class Mean_std(EnsembleAcquisition,MCAcquisition):
+class MeanStd(EnsembleAcquisition,MCAcquisition):
     def acquire_scores(self, logits: torch.Tensor) -> torch.Tensor:
         # Mean-STD acquisition function
         # (n_nets/n_mc_samples, pool_dim, n_classes) logits shape
