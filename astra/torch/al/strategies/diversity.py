@@ -17,7 +17,7 @@ class DiversityStrategy(Strategy):
         n_mc_samples: int = None,
         batch_size: int = None,
     ) -> Dict[str, torch.Tensor]:
-        """Ensemble query strategy with multiple neural networks
+        """Diversity query strategy with multiple neural networks
 
         Args:
             net: A neural network to extract features.
@@ -38,23 +38,20 @@ class DiversityStrategy(Strategy):
 
         with torch.no_grad():
             # Get the features for the pool
-            pool_features_list = []
-            for x, _ in data_loader:
-                pool_features = net(x)
-                pool_features_list.append(pool_features)
-            pool_features = torch.cat(pool_features_list, dim=0)  # (pool_dim, feature_dim)
+            x_pool, y_pool = data_loader.dataset
+            x_pool = x_pool.permute(0,3,1,2)
+            pool_features = net(x_pool).cpu() # (pool_dim, feature_dim)
 
             # Get the features for the context
-            context_features_list = []
-            for x, _ in context_data_loader:
-                context_features = net(x)
-                context_features_list.append(context_features)
-            context_features = torch.cat(context_features_list, dim=0)  # (context_dim, feature_dim)
+            x_context, y_context = context_data_loader.dataset
+            x_context = x_context[0]
+            y_context = y_context[0]
+            x_context = x_context.permute(0,3,1,2)            
+            context_features = net(x_context).cpu() # (context_dim, feature_dim)
 
             best_indices = {}
             for acq_name, acquisition in self.acquisitions.items():
-                scores = acquisition.acquire_scores(pool_features, context_features)
-                selected_indices = torch.topk(scores, n_query_samples).indices
+                selected_indices = acquisition.acquire_scores(context_features, pool_features, n_query_samples)
+                selected_indices = torch.tensor(selected_indices)#, device=self.device)
                 best_indices[acq_name] = selected_indices
-
         return best_indices

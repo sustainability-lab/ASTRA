@@ -1,6 +1,6 @@
 import torch
 from base import RandomAcquisition
-
+from base import DiversityAcquisition
 
 class Random(RandomAcquisition):
     def acquire_scores(self, logits: torch.Tensor):
