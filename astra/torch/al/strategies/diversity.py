@@ -51,7 +51,9 @@ class DiversityStrategy(Strategy):
         Returns:
             best_indices: A dictionary of acquisition names and the corresponding best indices.
         """
-        assert isinstance(pool_indices, torch.Tensor), f"pool_indices must be a torch.Tensor, got {type(pool_indices)}"
+        assert isinstance(
+            pool_indices, torch.Tensor
+        ), f"pool_indices must be a torch.Tensor, got {type(pool_indices)}"
         assert isinstance(
             context_indices, torch.Tensor
         ), f"context_indices must be a torch.Tensor, got {type(context_indices)}"
@@ -61,32 +63,27 @@ class DiversityStrategy(Strategy):
 
         data_loader = DataLoader(self.dataset)
 
-        # put model on eval mode
-        net.eval()
-
         with torch.no_grad():
+            # Get all features
+            features_list = []
+            for x, _ in data_loader:
+                x = x.permute(0, 3, 1, 2)
+                features = net(x)
+                features_list.append(features)
+            features = torch.cat(features_list, dim=0)  # (data_dim, feature_dim)
             # Get the features for the pool
-            x_pool, y_pool = data_loader.dataset
-            x_pool = x_pool.permute(0,3,1,2)
-            pool_features = net(x_pool).cpu() # (pool_dim, feature_dim)
+            pool_features = features[pool_indices]  # (pool_dim, feature_dim)
 
             # Get the features for the context
-            x_context, y_context = context_data_loader.dataset
-            x_context = x_context[0]
-            y_context = y_context[0]
-            x_context = x_context.permute(0,3,1,2)            
-            context_features = net(x_context).cpu() # (context_dim, feature_dim)
+            context_features = features[context_indices]  # (context_dim, feature_dim)
 
             best_indices = {}
-
-            if not isinstance(pool_indices, list):
-                # tolist() works for both numpy and torch tensors. It also work for tensors on GPU.
-                pool_indices = pool_indices.tolist()
-            if not isinstance(context_indices, list):
-                context_indices = context_indices.tolist()
-
             for acq_name, acquisition in self.acquisitions.items():
-                selected_indices = acquisition.acquire_scores(context_features, pool_features, n_query_samples)
-                selected_indices = torch.tensor(selected_indices)#, device=self.device)
+                selected_indices = acquisition.acquire_scores(
+                    context_features.cpu(), pool_features.cpu(), n_query_samples
+                )
+                selected_indices = torch.tensor(
+                    selected_indices
+                )  # , device=self.device)
                 best_indices[acq_name] = selected_indices
         return best_indices

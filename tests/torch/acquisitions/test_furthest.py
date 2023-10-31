@@ -49,10 +49,12 @@ def test_furthest():
 
     # Query the strategy
     best_indices = strategy.query(
-        feature_extractor, pool_indices, n_query_samples=n_query_samples
+        feature_extractor, pool_indices, train_indices, n_query_samples=n_query_samples
     )
 
     print(best_indices)
 
     assert best_indices["Furthest"].shape == (n_query_samples,)
 
+
+# test_furthest()
