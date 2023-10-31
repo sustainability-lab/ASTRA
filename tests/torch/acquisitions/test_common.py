@@ -2,7 +2,7 @@ import pytest
 
 import torch
 from astra.torch.al import (
-    RandomAcquisition,
+    UniformRandomAcquisition,
     RandomStrategy,
     EnsembleAcquisition,
     EnsembleStrategy,
@@ -15,7 +15,7 @@ from astra.torch.al.errors import AcquisitionMismatchError
 
 
 def test_mutual_pairs():
-    acquision = RandomAcquisition()
+    acquision = UniformRandomAcquisition()
     inputs = torch.rand(10, 3, 32, 32)
     outputs = torch.randint(0, 10, (10,))
     strategy = RandomStrategy(acquision, inputs, outputs)
