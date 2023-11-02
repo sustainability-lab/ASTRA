@@ -13,8 +13,6 @@ class MeanStd(EnsembleAcquisition,MCAcquisition):
         pool_num = logits.shape[1]
         softmax_activation = torch.nn.Softmax(dim=2)
         prob = softmax_activation(logits)
-        expectaion_of_squared = torch.mean(prob**2,dim=0)
-        expectation_squared = torch.mean(prob,dim=0)**2
-        std = torch.sqrt(expectation_of_squared - expectation_squared)
+        std = torch.std(prob,dim=0,unbiased=False)
         scores = torch.mean(std, dim=1) # mean over classes, shape (pool_dim)
         return scores
