@@ -12,9 +12,39 @@ from astra.torch.al import (
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-import torch
-import torch.nn as nn
-import numpy as np
+def test_entropy():
+    data = CIFAR10(root="data", download=True, train=False)  # "test" for less data
+    inputs = torch.tensor(data.data).float().to(device)
+    outputs = torch.tensor(data.targets).long().to(device)
+    
+    #Meta parameters
+    n_pool = 1000
+    indices = torch.randperm(len(inputs))
+    pool_indices = indices[:n_pool]
+    train_indices = indices[n_pool:]
+    n_query_samples = 10
+
+        # Define the acquisition function
+    acquisition = EntropyAcquisition()
+    strategy = DeterministicStrategy(acquisition, inputs, outputs)
+    strategy.to(device)
+    net = CNN(32, 3, 3, [4, 8], [2, 3], 10).to(device)
+    best_indices = strategy.query(net, pool_indices, n_query_samples=n_query_samples)
+    print(best_indices)
+    assert best_indices['EntropyAcquisition'].shape==(n_query_samples,)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # def test_entropy():
 #     # Create synthetic data
@@ -64,23 +94,23 @@ import numpy as np
 
 #     # Assert the shape of the queried indices
 #     assert best_indices["EntropyAcquisition"].shape == (n_query_samples,) # Import your EntropyAcquisition class from your module
-import torch.nn.functional as F
+# import torch.nn.functional as F
 
-def test_entropy_acquisition():
-    # Create random logits (replace this with your actual logits)
-    # Random logits with shape (batch_size, num_classes)
-    logits = torch.rand(5, 4)
+# def test_entropy_acquisition():
+#     # Create random logits (replace this with your actual logits)
+#     # Random logits with shape (batch_size, num_classes)
+#     logits = torch.rand(5, 4)
 
-    # Create an instance of your EntropyAcquisition
-    entropy_acquisition = EntropyAcquisition()
+#     # Create an instance of your EntropyAcquisition
+#     entropy_acquisition = EntropyAcquisition()
 
-    # Calculate entropy scores
-    scores = entropy_acquisition.acquire_scores(logits)
+#     # Calculate entropy scores
+#     scores = entropy_acquisition.acquire_scores(logits)
 
-    # Print the entropy scores
-    print("Entropy Scores:", scores)
+#     # Print the entropy scores
+#     print("Entropy Scores:", scores)
 
-    # Check if the scores are scalar
-    assert isinstance(scores, torch.Tensor)
+#     # Check if the scores are scalar
+#     assert isinstance(scores, torch.Tensor)
     
 
