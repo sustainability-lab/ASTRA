@@ -18,7 +18,7 @@ class MCStrategy(Strategy):
         inputs: torch.Tensor,
         outputs: torch.Tensor,
     ):
-        """Monte Carlo Dropout query strategy. See https://arxiv.org/abs/1506.02142 (Dropout as a Bayesian Approximation: Representing Model Uncertainty in Deep Learning)
+        """Base class for query strategies
 
         Args:
             acquisitions: A sequence of acquisition functions.
@@ -40,7 +40,8 @@ class MCStrategy(Strategy):
         n_mc_samples: int = 10,
         batch_size: int = None,
     ) -> Dict[str, torch.Tensor]:
-        """
+        """Monte Carlo query strategy
+
         Args:
             net: A neural network with dropout layers.
             pool_indices: The indices of the pool set.
@@ -58,27 +59,24 @@ class MCStrategy(Strategy):
             batch_size = len(pool_indices)
 
         # Set n_repeats for x for vmap later
-        repeats = [1] * (len(self.dataset.tensor[0].shape) + 1)  # +1 for mc dimension
+        repeats = [1] * (len(self.dataset.tensors[0].shape) + 1)  # +1 for mc dimension
         repeats[0] = n_mc_samples
 
         data_loader = DataLoader(self.dataset[pool_indices])
 
         # Put the model on train mode to enable dropout
         net.train()
-
+        x = data_loader.dataset[0]
+        y = data_loader.dataset[1]
         with torch.no_grad():
-            logits_list = []
-            for x, _ in data_loader:
-                vx = x[np.newaxis, ...].repeat(*repeats).to(self.device)
-                logits = torch.vmap(net, randomness="different")(vx)
-                logits_list.append(logits)
-            logits = torch.cat(logits_list, dim=1)  # (n_mc_samples, pool_dim, n_classes)
+            vx = x[np.newaxis, ...].repeat(*repeats).to(self.device)
+            logits = torch.vmap(net, randomness="different")(vx)
 
-            best_indices = {}
-            for acq_name, acquisition in self.acquisitions.items():
-                scores = acquisition.acquire_scores(logits)
-                index = torch.topk(scores, n_query_samples).indices
-                selected_indices = pool_indices[index]
-                best_indices[acq_name] = selected_indices
+        best_indices = {}
+        for acq_name, acquisition in self.acquisitions.items():
+            scores = acquisition.acquire_scores(logits)
+            index = torch.topk(scores, n_query_samples).indices
+            selected_indices = pool_indices[index.cpu()]
+            best_indices[acq_name] = selected_indices
 
         return best_indices
