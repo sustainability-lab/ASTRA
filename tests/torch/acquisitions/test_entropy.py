@@ -66,4 +66,4 @@ def test_entropy():
     best_indices = strategy.query(net, pool_indices, n_query_samples=n_query_samples)
     print(best_indices)
     assert best_indices["EntropyAcquisition"].shape == (n_query_samples,)
-
+test_entropy()
