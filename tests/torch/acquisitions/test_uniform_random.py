@@ -3,7 +3,7 @@ import pytest
 import torch
 from torchvision.datasets import CIFAR10
 
-from astra.torch.models import CNN
+from astra.torch.models import CNNClassifier
 from astra.torch.al import UniformRandomAcquisition, RandomStrategy, EnsembleAcquisition
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -29,7 +29,7 @@ def test_random():
     strategy.to(device)
 
     # Define the model
-    net = CNN(32, 3, 3, [4, 8], [2, 3], 10).to(device)
+    net = CNNClassifier(32, 3, 3, [4, 8], [2, 3], 10).to(device)
 
     # Query the strategy
     best_indices = strategy.query(net, pool_indices, n_query_samples=n_query_samples)

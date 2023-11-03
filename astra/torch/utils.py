@@ -8,59 +8,47 @@ def count_params(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 
-def train_fn(model, inputs, output, loss_fn, lr, n_epochs, batch_size=None, enable_tqdm=True):
+def train_fn(model, inputs, outputs, loss_fn, lr, epochs, batch_size=None, shuffle=True, verbose=True):
     if batch_size is None:
         batch_size = len(inputs)
-
-    data_loader = DataLoader(TensorDataset(inputs, output), batch_size=batch_size, shuffle=True)
 
     model.train()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
     iter_losses = []
     epoch_losses = []
-    outer_loop = range(n_epochs)
-    if enable_tqdm:
-        pbar = tqdm(total=len(data_loader) * n_epochs)
-        n_processed = 0
 
-    for _ in outer_loop:
+    # shuffle
+    if shuffle:
+        idx = torch.randperm(len(inputs))
+    else:
+        idx = torch.arange(len(inputs))
+
+    for _ in range(epochs):
         loss_value = 0.0
-        for x, y in data_loader:
+        pbar = range(0, len(inputs), batch_size)
+        if verbose:
+            pbar = tqdm(pbar)
+        for i in pbar:
             optimizer.zero_grad()
-            pred = model(x)
-            loss = loss_fn(pred, y)
+            pred = model(inputs[idx[i : i + batch_size]].to(model.device))
+            loss = loss_fn(pred, outputs[idx[i : i + batch_size]].to(model.device))
             loss.backward()
             optimizer.step()
             iter_losses.append(loss.item())
             loss_value += loss.item()
-            if enable_tqdm:
-                n_processed += len(x)
-                pbar.update(1)
+            if verbose:
                 pbar.set_description(f"Loss: {loss.item():.6f}")
 
-        epoch_losses.append(loss_value / len(data_loader))
+        # shuffle
+        if shuffle:
+            idx = torch.randperm(len(inputs))
 
-    return {"iter_losses": iter_losses, "epoch_losses": epoch_losses}
+        epoch_losses.append(loss_value / (len(inputs) / batch_size))
+        if verbose:
+            print(f"Epoch {len(epoch_losses)}: {epoch_losses[-1]}")
 
-
-def predict_class(model, inputs, batch_size=None):
-    """Generic predict function for classification models.
-    Note that we assume that the model predicts the logits of size `n_classes` even for the binary classification case.
-    """
-    if batch_size is None:
-        batch_size = len(inputs)
-
-    data_loader = DataLoader(TensorDataset(inputs), batch_size=batch_size, shuffle=False)
-
-    model.eval()
-    with torch.no_grad():
-        preds = []
-        for x in tqdm(data_loader):
-            pred = model(x[0])
-            preds.append(pred)
-        pred = torch.cat(preds)
-    return pred.argmax(dim=1)
+    return iter_losses, epoch_losses
 
 
 def ravel_pytree(pytree):

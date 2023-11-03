@@ -1,7 +1,8 @@
+from copy import deepcopy
 import os
 import numpy as np
+import torch
 from torchvision import datasets, transforms
-import xarray as xr
 import warnings
 
 
@@ -17,29 +18,32 @@ def load_mnist():
     mnist_train = datasets.MNIST(root=f"{os.environ['TORCH_HOME']}/data", train=True, download=True)
     mnist_test = datasets.MNIST(root=f"{os.environ['TORCH_HOME']}/data", train=False, download=True)
 
-    train_img = mnist_train.data.float().cpu().numpy()
-    train_label = mnist_train.targets.float().cpu().numpy()
+    train_images = mnist_train.data.float()
+    train_labels = mnist_train.targets.long()
 
-    test_img = mnist_test.data.float().cpu().numpy()
-    test_label = mnist_test.targets.float().cpu().numpy()
+    test_images = mnist_test.data.float()
+    test_labels = mnist_test.targets.long()
 
-    img = np.concatenate([train_img, test_img], axis=0)
-    label = np.concatenate([train_label, test_label], axis=0)
+    images = torch.cat([train_images, test_images], dim=0)
+    labels = torch.cat([train_labels, test_labels], dim=0)
 
-    ds = xr.Dataset(
-        {
-            "img": (["sample", "channel", "x", "y"], img[:, None, :, :]),
-            "label": (["sample"], label),
-        },
-        coords={
-            "sample": np.arange(len(img)),
-            "channel": [0],
-            "x": np.arange(img.shape[1])[::-1],
-            "y": np.arange(img.shape[2]),
-        },
-    )
+    mnist_train.data = images
+    mnist_train.targets = labels
 
-    return ds, "MNIST"
+    def repr(self):
+        return f"""
+MNIST Dataset
+length of dataset: {len(self)}
+shape of images: {self.data.shape[1:]}
+len of classes: {len(self.classes)}
+classes: {self.classes}
+dtype of images: {self.data.dtype}
+dtype of labels: {self.targets.dtype}
+"""
+
+    mnist_train.__class__.__repr__ = repr
+
+    return mnist_train
 
 
 @prerequisite
@@ -47,26 +51,31 @@ def load_cifar_10():
     cfar_10_train = datasets.CIFAR10(root=f"{os.environ['TORCH_HOME']}/data", train=True, download=True)
     cfar_10_test = datasets.CIFAR10(root=f"{os.environ['TORCH_HOME']}/data", train=False, download=True)
 
-    train_img = cfar_10_train.data.transpose(0, 3, 1, 2).astype(np.float32) / 255
-    train_label = np.array(cfar_10_train.targets).astype(np.float32)
+    train_images = torch.tensor(cfar_10_train.data).float() / 255
+    train_images = torch.einsum("nhwc->nchw", train_images)
+    train_labels = torch.tensor(cfar_10_train.targets).long()
 
-    test_img = cfar_10_test.data.transpose(0, 3, 1, 2).astype(np.float32) / 255
-    test_label = np.array(cfar_10_test.targets).astype(np.float32)
+    test_images = torch.tensor(cfar_10_test.data).float() / 255
+    test_images = torch.einsum("nhwc->nchw", test_images)
+    test_labels = torch.tensor(cfar_10_test.targets).long()
 
-    img = np.concatenate([train_img, test_img], axis=0)
-    label = np.concatenate([train_label, test_label], axis=0)
+    images = torch.cat([train_images, test_images], dim=0)
+    labels = torch.cat([train_labels, test_labels], dim=0)
 
-    ds = xr.Dataset(
-        {
-            "img": (["sample", "channel", "x", "y"], img),
-            "label": (["sample"], label),
-        },
-        coords={
-            "sample": range(len(img)),
-            "channel": range(img.shape[1]),
-            "x": np.arange(img.shape[2])[::-1],
-            "y": np.arange(img.shape[3]),
-        },
-    )
+    cfar_10_train.data = images
+    cfar_10_train.targets = labels
 
-    return ds, "CIFAR-10"
+    def repr(self):
+        return f"""
+CIFAR-10 Dataset
+length of dataset: {len(self)}
+shape of images: {self.data.shape[1:]}
+len of classes: {len(self.classes)}
+classes: {self.classes}
+dtype of images: {self.data.dtype}
+dtype of labels: {self.targets.dtype}
+            """
+
+    cfar_10_train.__class__.__repr__ = repr
+
+    return cfar_10_train
