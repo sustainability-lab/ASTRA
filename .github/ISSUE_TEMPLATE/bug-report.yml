@@ -69,8 +69,8 @@ body:
   - type: textarea
     id: traceback
     attributes:
-      label: Traceback
-      description: Put the Python traceback information here.
+      label: Error Traceback
+      description: Put the Python error traceback information here.
       placeholder: |
         Traceback (most recent call last):
           File ...
