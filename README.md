@@ -2,11 +2,11 @@
 <img src="https://github.com/sustainability-lab/ASTRA/assets/59758528/d6a8e7ed-5368-4574-801e-76b273b56091" width="512">
 </p>
 
-"**A**I for **S**ustainability" **T**oolkit for **R**esearch and **A**nalysis. ASTRA (अस्त्र) means a "tool" or "a weapon" in Sanskrit.
-
 ![Python version](https://img.shields.io/badge/Python-3.9%2B-brightgreen)
 [![CI](https://github.com/sustainability-lab/ASTRA/actions/workflows/CI.yml/badge.svg)](https://github.com/sustainability-lab/ASTRA/actions/workflows/CI.yml)
 [![Coverage Status](https://coveralls.io/repos/github/sustainability-lab/ASTRA/badge.svg?branch=main)](https://coveralls.io/github/sustainability-lab/ASTRA?branch=main)
+
+"**A**I for **S**ustainability" **T**oolkit for **R**esearch and **A**nalysis. ASTRA (अस्त्र) means a "tool" or "a weapon" in Sanskrit.
 
 # Install
 
