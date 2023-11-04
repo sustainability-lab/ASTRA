@@ -67,7 +67,6 @@ class DiversityStrategy(Strategy):
             # Get all features
             features_list = []
             for x, _ in data_loader:
-                x = x.permute(0, 3, 1, 2)
                 features = net(x)
                 features_list.append(features)
             features = torch.cat(features_list, dim=0)  # (data_dim, feature_dim)

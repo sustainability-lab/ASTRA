@@ -10,7 +10,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def test_centroid():
     data = CIFAR10(root="data", download=True, train=False)  # "test" for less data
-    inputs = torch.tensor(data.data).float().to(device)
+    inputs = torch.tensor(data.data).permute(0, 3, 1, 2).float().to(device)
     outputs = torch.tensor(data.targets).long().to(device)
 
     # Meta parameters
@@ -55,5 +55,3 @@ def test_centroid():
 
     assert best_indices["Centroid"].shape == (n_query_samples,)
 
-
-# test_centroid()
