@@ -12,3 +12,6 @@ data/
 
 # distribution directories
 dist/
+
+# ignore coverage files
+.coverage
