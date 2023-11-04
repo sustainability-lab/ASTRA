@@ -1,6 +1,5 @@
 import torch
 from astra.torch.al.acquisitions.base import DiversityAcquisition
-from distil.active_learning_strategies.core_set import CoreSet, Strategy
 
 
 class Furthest(DiversityAcquisition):
@@ -19,8 +18,17 @@ class Furthest(DiversityAcquisition):
         idxs: list
             List of selected data point indices with respect to unlabeled_embeddings
         """
-        strategy = Strategy(X=-1, Y=-1, unlabeled_x=-1, net=-1, handler=-1, nclasses=-1)
-        idxs = CoreSet.furthest_first(
-            strategy, X_set=labeled_embeddings, X=unlabeled_embeddings, n=n
-        )
+        if labeled_embeddings.shape[0] == 0:
+            min_dist = torch.full((unlabeled_embeddings.shape[0],), float("inf"))
+        else:
+            dist_ctr = torch.cdist(unlabeled_embeddings, labeled_embeddings, p=2)
+            min_dist = torch.min(dist_ctr, dim=1)[0]
+        idxs = []
+        for i in range(n):
+            idx = torch.argmax(min_dist)
+            idxs.append(idx.item())
+            dist_new_ctr = torch.cdist(
+                unlabeled_embeddings, unlabeled_embeddings[[idx], :]
+            )
+            min_dist = torch.minimum(min_dist, dist_new_ctr[:, 0])
         return idxs
