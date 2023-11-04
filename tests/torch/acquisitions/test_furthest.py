@@ -2,7 +2,6 @@ import torch
 from torchvision.datasets import CIFAR10
 
 from astra.torch.models import CNNClassifier
-
 from astra.torch.al import Furthest, DiversityStrategy
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -30,15 +29,13 @@ def test_furthest():
     # Define the model
     net = CNNClassifier(32, 3, 3, [4, 8], [2, 3], 10).to(device)
 
-    # Define a feature extractor
+    # Feature extractor callable from the network
     feature_extractor = net.featurizer
-
+    
     # Query the strategy
     best_indices = strategy.query(
         feature_extractor, pool_indices, train_indices, n_query_samples=n_query_samples
     )
-
-    print(best_indices)
 
     assert best_indices["Furthest"].shape == (n_query_samples,)
 

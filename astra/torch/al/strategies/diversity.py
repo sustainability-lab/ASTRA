@@ -79,10 +79,8 @@ class DiversityStrategy(Strategy):
             best_indices = {}
             for acq_name, acquisition in self.acquisitions.items():
                 selected_indices = acquisition.acquire_scores(
-                    context_features.cpu(), pool_features.cpu(), n_query_samples
+                    context_features, pool_features, n_query_samples
                 )
-                selected_indices = torch.tensor(
-                    selected_indices
-                )  # , device=self.device)
+                selected_indices = torch.tensor(selected_indices) 
                 best_indices[acq_name] = selected_indices
         return best_indices
