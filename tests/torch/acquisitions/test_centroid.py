@@ -2,7 +2,6 @@ import torch
 from torchvision.datasets import CIFAR10
 
 from astra.torch.models import CNNClassifier
-
 from astra.torch.al import Centroid, DiversityStrategy
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -37,8 +36,6 @@ def test_centroid():
     best_indices = strategy.query(
         feature_extractor, pool_indices, train_indices, n_query_samples=n_query_samples
     )
-
-    print(best_indices)
 
     assert best_indices["Centroid"].shape == (n_query_samples,)
 
