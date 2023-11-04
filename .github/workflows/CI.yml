@@ -20,7 +20,6 @@ jobs:
         run: |
           pip install --no-cache-dir -U -r requirements-dev.txt | cat
           pip install -e .
-          pip install pytest pytest-cov coveralls
       - name: Install ML dependencies
         run: |
           pip install --no-cache-dir -U -r requirements-ml.txt | cat

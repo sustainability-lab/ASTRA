@@ -1,7 +1,14 @@
 import pytest
 import torch
 import astra.torch.models as models
-from torchvision.models import efficientnet_b0, EfficientNet_B0_Weights, vit_b_16, ViT_B_16_Weights
+from torchvision.models import (
+    efficientnet_b0,
+    EfficientNet_B0_Weights,
+    vit_b_16,
+    ViT_B_16_Weights,
+    resnet18,
+    ResNet18_Weights,
+)
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -17,10 +24,27 @@ def test_mlp(x, output_dim, out_shape):
     # create a empty class object
 
     input_dim = x.shape[1]
-    model = models.MLP(input_dim, [7, 9], output_dim).to(device)
+    model = models.MLPRegressor(input_dim, [7, 9], output_dim).to(device)
 
     output = model(x.to(device))
     assert output.shape == out_shape
+
+    model = models.MLPClassifier(input_dim, [7, 9], output_dim).to(device)
+    output = model(x.to(device))
+    assert output.shape == torch.Size([x.shape[0], output_dim])
+
+    pred_logits = model.predict(x.to(device), batch_size=2)
+    pred_classes = model.predict_class(x.to(device), batch_size=2)
+    assert pred_logits.shape == torch.Size([x.shape[0], output_dim])
+    assert pred_classes.shape == torch.Size([x.shape[0]])
+    assert torch.all(pred_logits.argmax(dim=1) == pred_classes)
+    assert pred_logits.dtype == torch.float32
+    assert pred_classes.dtype == torch.int64
+
+    accuracy = model.accuracy(x.to(device), torch.randint(0, output_dim, (x.shape[0],)).to(device), batch_size=2)
+    assert accuracy >= 0.0 and accuracy <= 1.0
+    accuracy = model.accuracy(x.to(device), torch.randint(0, output_dim, (x.shape[0],)).to(device), batch_size=None)
+    assert accuracy >= 0.0 and accuracy <= 1.0
 
 
 @pytest.mark.parametrize(
@@ -34,7 +58,7 @@ def test_siren(x, output_dim, out_shape):
     # create a empty class object
 
     input_dim = x.shape[1]
-    model = models.SIREN(input_dim, [7, 9], output_dim).to(device)
+    model = models.SIRENRegressor(input_dim, [7, 9], output_dim).to(device)
 
     output = model(x.to(device))
     assert output.shape == out_shape
@@ -50,7 +74,47 @@ def test_cnn(x):
     dense_hidden_dims = [7, 9]
     output_dim = 12
 
-    model = models.CNN(image_dim, kernel_size, n_channels, conv_hidden_dims, dense_hidden_dims, output_dim).to(device)
+    model = models.CNNClassifier(
+        image_dim, kernel_size, n_channels, conv_hidden_dims, dense_hidden_dims, output_dim
+    ).to(device)
+    out = model(x.to(device))
+
+    assert out.shape == torch.Size([batch_dim, output_dim])
+
+    # With aggregation
+    model = models.CNNClassifier(
+        image_dim, kernel_size, n_channels, conv_hidden_dims, dense_hidden_dims, output_dim, adaptive_pooling=True
+    ).to(device)
+    out = model(x.to(device))
+
+    assert out.shape == torch.Size([batch_dim, output_dim])
+
+    model = models.CNNRegressor(image_dim, kernel_size, n_channels, conv_hidden_dims, dense_hidden_dims, output_dim).to(
+        device
+    )
+    out = model(x.to(device))
+
+    assert out.shape == torch.Size([batch_dim, output_dim])
+
+    # With aggregation
+    model = models.CNNRegressor(
+        image_dim, kernel_size, n_channels, conv_hidden_dims, dense_hidden_dims, output_dim, adaptive_pooling=True
+    ).to(device)
+    out = model(x.to(device))
+
+    assert out.shape == torch.Size([batch_dim, output_dim])
+
+
+@pytest.mark.parametrize("x, output_dim", [(torch.randn(11, 3, 28, 28), 4), (torch.randn(11, 3, 224, 224), 6)])
+def test_resnet(x, output_dim):
+    batch_dim = x.shape[0]
+
+    model = models.ResNetClassifier(resnet18, ResNet18_Weights.DEFAULT, output_dim).to(device)
+    out = model(x.to(device))
+
+    assert out.shape == torch.Size([batch_dim, output_dim])
+
+    model = models.ResNetRegressor(resnet18, ResNet18_Weights.DEFAULT, output_dim).to(device)
     out = model(x.to(device))
 
     assert out.shape == torch.Size([batch_dim, output_dim])
@@ -60,7 +124,12 @@ def test_cnn(x):
 def test_efficientnet(x, output_dim):
     batch_dim = x.shape[0]
 
-    model = models.EfficientNet(efficientnet_b0, EfficientNet_B0_Weights.DEFAULT, output_dim).to(device)
+    model = models.EfficientNetClassifier(efficientnet_b0, EfficientNet_B0_Weights.DEFAULT, output_dim).to(device)
+    out = model(x.to(device))
+
+    assert out.shape == torch.Size([batch_dim, output_dim])
+
+    model = models.EfficientNetRegressor(efficientnet_b0, EfficientNet_B0_Weights.DEFAULT, output_dim).to(device)
     out = model(x.to(device))
 
     assert out.shape == torch.Size([batch_dim, output_dim])
@@ -70,7 +139,26 @@ def test_efficientnet(x, output_dim):
 def test_vit(x, output_dim):
     batch_dim = x.shape[0]
 
-    model = models.ViT(vit_b_16, ViT_B_16_Weights.DEFAULT, output_dim).to(device)
+    if x.shape[-1] != 224 or x.shape[-2] != 224:
+        model = models.ViTClassifier(vit_b_16, ViT_B_16_Weights.DEFAULT, output_dim, transform=False).to(device)
+
+        with pytest.raises(AssertionError):
+            out = model(x.to(device))
+
+    model = models.ViTClassifier(vit_b_16, ViT_B_16_Weights.DEFAULT, output_dim, transform=True).to(device)
+
+    out = model(x.to(device))
+
+    assert out.shape == torch.Size([batch_dim, output_dim])
+
+    if x.shape[-1] != 224 or x.shape[-2] != 224:
+        model = models.ViTRegressor(vit_b_16, ViT_B_16_Weights.DEFAULT, output_dim, transform=False).to(device)
+
+        with pytest.raises(AssertionError):
+            out = model(x.to(device))
+
+    model = models.ViTRegressor(vit_b_16, ViT_B_16_Weights.DEFAULT, output_dim, transform=True).to(device)
+
     out = model(x.to(device))
 
     assert out.shape == torch.Size([batch_dim, output_dim])
