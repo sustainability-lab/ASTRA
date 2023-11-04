@@ -1,5 +1,9 @@
 import torch
-from astra.torch.al.acquisitions.base import MCAcquisition, EnsembleAcquisition, DeterministicAcquisition   
+from astra.torch.al.acquisitions.base import (
+    MCAcquisition,
+    EnsembleAcquisition,
+    DeterministicAcquisition,
+)
 
 import torch.nn.functional as F
 
