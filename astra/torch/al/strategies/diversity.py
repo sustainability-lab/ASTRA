@@ -61,7 +61,7 @@ class DiversityStrategy(Strategy):
         if batch_size is None:
             batch_size = len(pool_indices)
 
-        data_loader = DataLoader(self.dataset)
+        data_loader = DataLoader(self.dataset, batch_size=batch_size)
 
         with torch.no_grad():
             # Get all features
