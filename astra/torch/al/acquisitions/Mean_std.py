@@ -1,6 +1,6 @@
 import torch
-from astra.torch.al.aquisition.base import EnsembleAcquisition
-from astra.torch.al.aquisition.base import MCAcquisition
+from astra.torch.al.acquisitions.base import EnsembleAcquisition
+from astra.torch.al.acquisitions.base import MCAcquisition
 # Ensemble and MC strategy for producing different model parameters
 
     
