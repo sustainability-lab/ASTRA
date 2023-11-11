@@ -4,8 +4,7 @@ import torch
 from torchvision.datasets import CIFAR10
 
 from astra.torch.models import CNNClassifier
-from astra.torch.al.aquisitions import MeanStd
-from astra.torch.al.strategies import EnsembleStrategy, MCStrategy
+from astra.torch.al import MeanStd,EnsembleStrategy, MCStrategy
 # from astra.torch.al.errors import AcquisitionMismatchError
 # from astra.tests.torch.aquisitions.test_common import test_acquisition_mismatch
 
