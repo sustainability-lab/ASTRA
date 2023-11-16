@@ -1,3 +1,4 @@
+from copy import deepcopy
 from tqdm import tqdm
 import torch
 import optree
@@ -8,31 +9,74 @@ def count_params(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 
-def train_fn(model, inputs, outputs, loss_fn, lr, epochs, batch_size=None, shuffle=True, verbose=True):
+def train_fn(
+    model,
+    inputs,
+    outputs,
+    loss_fn,
+    lr=None,
+    epochs=1,
+    optimizer=None,
+    batch_size=None,
+    shuffle=True,
+    verbose=True,
+    get_state_dict=False,
+):
     if batch_size is None:
-        batch_size = len(inputs)
+        if inputs is not None:
+            input_leaf = optree.tree_leaves(inputs)[0]
+            if isinstance(input_leaf, torch.Tensor):
+                batch_size = len(input_leaf)
+                iterable = input_leaf
+        else:
+            if outputs is not None:
+                output_leaf = optree.tree_leaves(outputs)[0]
+                if isinstance(output_leaf, torch.Tensor):
+                    batch_size = len(output_leaf)
+                    iterable = output_leaf
+            else:
+                batch_size = 1
+                shuffle = False
+                iterable = [None]
 
     model.train()
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    if optimizer is None:
+        optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
     iter_losses = []
     epoch_losses = []
+    state_dict_list = []
 
     # shuffle
     if shuffle:
-        idx = torch.randperm(len(inputs))
+        idx = torch.randperm(len(iterable))
     else:
-        idx = torch.arange(len(inputs))
+        idx = torch.arange(len(iterable))
 
     for _ in range(epochs):
         loss_value = 0.0
-        pbar = range(0, len(inputs), batch_size)
+        pbar = range(0, len(iterable), batch_size)
         if verbose:
             pbar = tqdm(pbar)
         for i in pbar:
             optimizer.zero_grad()
-            pred = model(inputs[idx[i : i + batch_size]].to(model.device))
-            loss = loss_fn(pred, outputs[idx[i : i + batch_size]].to(model.device))
+
+            # Prepare inputs and outputs
+            if inputs is not None:
+                if isinstance(input_leaf, torch.Tensor):
+                    batch_input = optree.tree_map(lambda leaf: leaf[idx[i : i + batch_size]].to(model.device), inputs)
+                else:
+                    batch_input = inputs
+            else:
+                batch_input = None
+
+            if isinstance(output_leaf, torch.Tensor):
+                batch_output = optree.tree_map(lambda leaf: leaf[idx[i : i + batch_size]].to(model.device), outputs)
+            else:
+                batch_output = outputs
+
+            pred = model(batch_input)
+            loss = loss_fn(pred, batch_output)
             loss.backward()
             optimizer.step()
             iter_losses.append(loss.item())
@@ -40,15 +84,22 @@ def train_fn(model, inputs, outputs, loss_fn, lr, epochs, batch_size=None, shuff
             if verbose:
                 pbar.set_description(f"Loss: {loss.item():.6f}")
 
+            if get_state_dict:
+                state_dict = deepcopy(model.state_dict())
+                state_dict_list.append(state_dict)
+
         # shuffle
         if shuffle:
-            idx = torch.randperm(len(inputs))
+            idx = torch.randperm(len(iterable))
 
-        epoch_losses.append(loss_value / (len(inputs) / batch_size))
+        epoch_losses.append(loss_value / (len(iterable) / batch_size))
         if verbose:
             print(f"Epoch {len(epoch_losses)}: {epoch_losses[-1]}")
 
-    return iter_losses, epoch_losses
+    if get_state_dict:
+        return iter_losses, epoch_losses, state_dict_list
+    else:
+        return iter_losses, epoch_losses
 
 
 def ravel_pytree(pytree):
