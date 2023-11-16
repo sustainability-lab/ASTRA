@@ -28,12 +28,20 @@ def train_fn(
             if isinstance(input_leaf, torch.Tensor):
                 batch_size = len(input_leaf)
                 iterable = input_leaf
+            else:
+                batch_size = 1
+                shuffle = False
+                iterable = [None]
         else:
             if outputs is not None:
                 output_leaf = optree.tree_leaves(outputs)[0]
                 if isinstance(output_leaf, torch.Tensor):
                     batch_size = len(output_leaf)
                     iterable = output_leaf
+                else:
+                    batch_size = 1
+                    shuffle = False
+                    iterable = [None]
             else:
                 batch_size = 1
                 shuffle = False
