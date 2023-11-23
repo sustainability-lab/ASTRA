@@ -1,0 +1,134 @@
+<p align="center">
+<img src="https://github.com/sustainability-lab/ASTRA/assets/59758528/d6a8e7ed-5368-4574-801e-76b273b56091" width="512">
+</p>
+
+<p align="center">
+          <img src="https://img.shields.io/badge/Python-3.9%2B-brightgreen">
+          <a href="https://github.com/sustainability-lab/ASTRA/actions/workflows/CI.yml">
+                    <img src="https://github.com/sustainability-lab/ASTRA/actions/workflows/CI.yml/badge.svg">
+          </a>
+          <a href="https://coveralls.io/github/sustainability-lab/ASTRA?branch=main">
+                    <img src="https://coveralls.io/repos/github/sustainability-lab/ASTRA/badge.svg?branch=main">
+          </a>
+</p>
+
+"**A**I for **S**ustainability" **T**oolkit for **R**esearch and **A**nalysis. ASTRA (अस्त्र) means a "tool" or "a weapon" in Sanskrit.
+
+# Install
+
+Stable version:
+```bash
+pip install astra-lib
+```
+
+Latest version:
+```bash
+pip install git+https://github.com/sustainability-lab/ASTRA
+```
+
+
+# Contributing
+Please go through the [contributing guidelines](CONTRIBUTING.md) before making a contribution.
+
+
+# Useful Code Snippets
+
+## Data
+### Load Data
+```python
+{{ load_data }}
+```
+````python
+{{ load_data_output }}
+{{ load_data_error }}
+````
+
+## Models
+### MLPs
+```python
+{{ mlp }}
+```
+```python
+{{ mlp_output }}
+{{ mlp_error }}
+```
+
+### CNNs
+```python
+{{ cnn }}
+```
+```python
+{{ cnn_output }}
+{{ cnn_error }}
+```
+
+### EfficientNets
+```python
+{{ efficientnet }}
+```
+```python
+{{ efficientnet_output }}
+{{ efficientnet_error }}
+```
+
+
+### ViT
+```python
+{{ vit }}
+```
+```python
+{{ vit_output }}
+{{ vit_error }}
+```
+
+
+## Training
+### Train Function Usage
+```python
+{{ quick_train }}
+```
+```python
+{{ quick_train_output }}
+{{ quick_train_error }}
+```
+
+
+### Advanced Usage
+```python
+{{ advanced_train }}
+```
+```python
+{{ advanced_train_output }}
+{{ advanced_train_error }}
+```
+
+
+## Others
+### Count number of parameters in a model
+```python
+{{ count_params }}
+```
+```python
+{{ count_params_output }}
+{{ count_params_error }}
+```
+
+### Flatten/Unflatten the weights of a model
+
+#### Simple Example
+```python
+{{ ravel_pytree_simple }}
+```
+```python
+{{ ravel_pytree_simple_output }}
+{{ ravel_pytree_simple_error }}
+```
+
+#### Advanced Example
+```python
+{{ ravel_pytree_advanced }}
+```
+```python
+{{ ravel_pytree_advanced_output }}
+{{ ravel_pytree_advanced_error }}
+```

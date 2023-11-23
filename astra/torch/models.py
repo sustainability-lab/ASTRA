@@ -18,6 +18,8 @@ from torchvision.models import resnet18, ResNet18_Weights
 from torchvision.models._api import WeightsEnum
 from torch.hub import load_state_dict_from_url
 
+from typing import Tuple
+
 
 def get_state_dict(self, *args, **kwargs):
     if "check_hash" in kwargs:
@@ -280,7 +282,7 @@ class CNN(AstraModel):
 class CNNClassifier(Classifier):
     def __init__(
         self,
-        image_dim: int,
+        image_dims: Tuple[int, int],
         kernel_size: int,
         input_channels: int,
         conv_hidden_dims: list,
@@ -306,8 +308,9 @@ class CNNClassifier(Classifier):
         if adaptive_pooling:
             mlp_input_dim = conv_hidden_dims[-1]
         else:
-            out_image_dim = image_dim // 2 ** len(conv_hidden_dims)
-            mlp_input_dim = conv_hidden_dims[-1] * (out_image_dim**2)
+            out_image_dim0 = image_dims[0] // 2 ** len(conv_hidden_dims)
+            out_image_dim1 = image_dims[1] // 2 ** len(conv_hidden_dims)
+            mlp_input_dim = conv_hidden_dims[-1] * out_image_dim0 * out_image_dim1
         classifier = MLPClassifier(mlp_input_dim, dense_hidden_dims, n_classes, activation, dropout)
         super().__init__(featurizer, classifier)
 
@@ -315,7 +318,7 @@ class CNNClassifier(Classifier):
 class CNNRegressor(Regressor):
     def __init__(
         self,
-        image_dim: int,
+        image_dims: Tuple[int, int],
         kernel_size: int,
         input_channels: int,
         conv_hidden_dims: list,
@@ -341,8 +344,9 @@ class CNNRegressor(Regressor):
         if adaptive_pooling:
             mlp_input_dim = conv_hidden_dims[-1]
         else:
-            out_image_dim = image_dim // 2 ** len(conv_hidden_dims)
-            mlp_input_dim = conv_hidden_dims[-1] * (out_image_dim**2)
+            out_image_dim0 = image_dims[0] // 2 ** len(conv_hidden_dims)
+            out_image_dim1 = image_dims[1] // 2 ** len(conv_hidden_dims)
+            mlp_input_dim = conv_hidden_dims[-1] * out_image_dim0 * out_image_dim1
         regressor = MLPRegressor(mlp_input_dim, dense_hidden_dims, output_dim, activation, dropout)
         super().__init__(featurizer, regressor)
 

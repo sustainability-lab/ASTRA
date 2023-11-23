@@ -64,10 +64,10 @@ def test_siren(x, output_dim, out_shape):
     assert output.shape == out_shape
 
 
-@pytest.mark.parametrize("x", [torch.randn(11, 3, 28, 28), torch.randn(11, 5, 224, 224)])
+@pytest.mark.parametrize("x", [torch.randn(11, 3, 44, 28), torch.randn(11, 5, 224, 180)])
 def test_cnn(x):
     batch_dim = x.shape[0]
-    image_dim = x.shape[-1]
+    image_dim = (x.shape[-2], x.shape[-1])
     n_channels = x.shape[1]
     kernel_size = 3
     conv_hidden_dims = [4, 4, 7]
