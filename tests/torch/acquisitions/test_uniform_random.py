@@ -29,7 +29,7 @@ def test_random():
     strategy.to(device)
 
     # Define the model
-    net = CNNClassifier(32, 3, 3, [4, 8], [2, 3], 10).to(device)
+    net = CNNClassifier((32, 32), 3, 3, [4, 8], [2, 3], 10).to(device)
 
     # Query the strategy
     best_indices = strategy.query(net, pool_indices, n_query_samples=n_query_samples)
