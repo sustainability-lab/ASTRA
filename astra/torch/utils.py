@@ -74,8 +74,6 @@ def train_fn(
             inner_batch_size = batch_size
 
         iterable = range(0, len(in_or_out), inner_batch_size)
-        if verbose:
-            iterable = tqdm(iterable)
 
         if shuffle:
             idx = torch.randperm(len(in_or_out))
@@ -111,7 +109,11 @@ def train_fn(
     epoch_losses = []
     state_dict_list = []
 
-    for _ in range(epochs):
+    pbar = range(epochs)
+    if verbose:
+        pbar = tqdm(pbar)
+
+    for _ in pbar:
         loss_buffer = []
         for batch_input, batch_output in get_batch():
             loss = one_step(batch_input, batch_output)
@@ -125,7 +127,7 @@ def train_fn(
         epoch_losses.append(epoch_loss)
 
         if verbose:
-            print(f"Epoch {len(epoch_losses)}: {epoch_losses[-1]}")
+            pbar.set_description(f"Loss: {epoch_loss:.8f}")
 
     if return_state_dict:
         return (iter_losses, epoch_losses), state_dict_list
