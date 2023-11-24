@@ -18,10 +18,10 @@ def load_mnist():
     mnist_train = datasets.MNIST(root=f"{os.environ['TORCH_HOME']}/data", train=True, download=True)
     mnist_test = datasets.MNIST(root=f"{os.environ['TORCH_HOME']}/data", train=False, download=True)
 
-    train_images = mnist_train.data.float()
+    train_images = mnist_train.data.float() / 255
     train_labels = mnist_train.targets.long()
 
-    test_images = mnist_test.data.float()
+    test_images = mnist_test.data.float() / 255
     test_labels = mnist_test.targets.long()
 
     images = torch.cat([train_images, test_images], dim=0)
@@ -39,6 +39,7 @@ len of classes: {len(self.classes)}
 classes: {self.classes}
 dtype of images: {self.data.dtype}
 dtype of labels: {self.targets.dtype}
+range of image values: min={self.data.min()}, max={self.data.max()}
 """
 
     mnist_train.__class__.__repr__ = repr
@@ -74,6 +75,7 @@ len of classes: {len(self.classes)}
 classes: {self.classes}
 dtype of images: {self.data.dtype}
 dtype of labels: {self.targets.dtype}
+range of image values: min={self.data.min()}, max={self.data.max()}
             """
 
     cfar_10_train.__class__.__repr__ = repr
