@@ -39,6 +39,16 @@ body:
       placeholder: E.g., Python 3.11.5
     validations:
       required: true
+    
+  - type: input
+    id: sys_version
+    attributes:
+      label: Add system level information
+      description: Run command `python3 -c 'import sys; print(sys.version)'` in your shell and paste the output here.
+      placeholder: E.g., '3.9.7 | packaged by conda-forge | (default, Sep 29 2021, 19:20:46) \n[GCC 9.4.0]'
+    validations:
+      required: true
+  
 
   - type: textarea
     id: description
