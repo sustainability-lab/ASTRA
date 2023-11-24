@@ -18,7 +18,9 @@ from torchvision.models import resnet18, ResNet18_Weights
 from torchvision.models._api import WeightsEnum
 from torch.hub import load_state_dict_from_url
 
-from typing import Tuple
+from typing import Tuple, Literal
+
+from astra.torch.utils import get_model_device
 
 
 def get_state_dict(self, *args, **kwargs):
@@ -33,9 +35,22 @@ WeightsEnum.get_state_dict = get_state_dict
 
 # Base class for all ASTRA models
 class AstraModel(nn.Module):
-    @property
-    def device(self):
-        return next(self.parameters()).device
+    def predict(self, X, batch_size=None, device=None, eval_mode: bool = True):
+        if batch_size is None:
+            batch_size = len(X)
+        if device is None:
+            device = get_model_device(self)
+
+        if eval_mode:
+            self.eval()
+        with torch.no_grad():
+            preds = []
+            for i in tqdm(range(0, len(X), batch_size)):
+                pred = self(X[i : i + batch_size].to(device))
+                preds.append(pred)
+            pred = torch.cat(preds)
+
+        return pred
 
 
 # Classifier and regressor base classes
@@ -50,27 +65,9 @@ class Classifier(AstraModel):
         x = self.classifier(x)
         return x
 
-    def predict(self, X, batch_size=None):
-        if batch_size is None:
-            batch_size = len(X)
-
-        self.eval()
-        with torch.no_grad():
-            preds = []
-            for i in tqdm(range(0, len(X), batch_size)):
-                pred = self(X[i : i + batch_size].to(self.device))
-                preds.append(pred)
-            pred = torch.cat(preds)
-
-        return pred
-
-    def predict_class(self, X, batch_size=None):
-        logits = self.predict(X, batch_size)
+    def predict_class(self, X, batch_size=None, device=None, eval_mode=True):
+        logits = self.predict(X, batch_size, device, eval_mode)
         return logits.argmax(dim=1)
-
-    def accuracy(self, X, y, batch_size=None):
-        y_pred = self.predict_class(X, batch_size)
-        return (y_pred == y.to(self.device)).float().mean().item()
 
 
 class Regressor(AstraModel):
@@ -84,23 +81,12 @@ class Regressor(AstraModel):
         x = self.regressor(x)
         return x
 
-    def predict(self, X, batch_size=None):
-        if batch_size is None:
-            batch_size = len(X)
+    def rmse(self, X, y, batch_size=None, device=None, eval_mode: bool = True):
+        y_pred = self.predict(X=X, batch_size=batch_size, device=device, eval_mode=eval_mode)
 
-        self.eval()
-        with torch.no_grad():
-            preds = []
-            for i in tqdm(range(0, len(X), batch_size)):
-                pred = self(X[i : i + batch_size].to(self.device))
-                preds.append(pred)
-            pred = torch.cat(preds)
-
-        return pred
-
-    def rmse(self, X, y, batch_size=None):
-        y_pred = self.predict(X, batch_size)
-        return F.mse_loss(y_pred, y, reduction="mean").sqrt().item()
+        if device is None:
+            device = get_model_device(self)
+        return F.mse_loss(y_pred, y.to(device), reduction="mean").sqrt().item()
 
 
 # Multi-layer perceptron (MLP)

@@ -10,7 +10,7 @@ os.environ["TORCH_HOME"] = os.path.expanduser("~/.cache/torch")
 # Load a template named "README_template.jinja2"
 templateLoader = jinja2.FileSystemLoader(searchpath="./")
 templateEnv = jinja2.Environment(loader=templateLoader)
-TEMPLATE_FILE = "README_template.jinja2"
+TEMPLATE_FILE = "README_template.md"
 
 # Load examples
 example_dict = {}

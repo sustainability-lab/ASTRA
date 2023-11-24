@@ -14,6 +14,25 @@
 
 "**A**I for **S**ustainability" **T**oolkit for **R**esearch and **A**nalysis. ASTRA (अस्त्र) means a "tool" or "a weapon" in Sanskrit.
 
+# Design Principles
+Since `astra` is developed for research purposes, we'd try to adhere to these principles:
+
+## What we will try to do:
+1. Keep the API simple-to-use and standardized to enable quick prototyping via automated scripts.
+2. Keep the API transparent to expose as many details as possilbe. Explicit should be preferred over implicit.
+3. Keep the API flexible to allow users to stretch the limits of their experiments.
+
+## What we will try to avoid:
+4. We will try not to reduce code repeatation at expence of transparency, flexibility and performance. Too much abstraction often makes the API complex to understand and thus becomes hard to adapt for custom use cases.
+
+## Examples
+| Points | Example |
+| --- | --- |
+| 1 and 2 | We have exactly same arguments for all strategies in `astra.torch.al.strategies` to ease the automation but we explicitely mention in the docstrings if an argument is used or ignored for a strategy. |
+| 2 | predict functions in `astra` by default put the model on `eval` mode but also allow to set `eval_mode` to `False`. This can be useful for techniques like [MC dropout](https://arxiv.org/abs/1506.02142).
+| 3 | `train_fn` from `astra.torch.utils` works for all types of models and losses which may or may not be from `astra`.
+| 4 | Though F1 score can be computed from precision and recall, we explicitely use F1 score formula to allow transparency and to avoid computing `TP` multiple times.
+
 # Install
 
 Stable version:
@@ -217,9 +236,9 @@ print(np.array(epoch_losses).round(2))
 
 ```
 ```python
-[0.69 0.88 0.68 0.68 0.69]
-[0.33 0.29 0.27 0.25 0.25]
-[0.25 0.25 0.25 0.25 0.25]
+[ 0.69 10.82  0.66  0.68  0.68]
+[0.61 0.51 0.43 0.38 0.33]
+[0.3  0.27 0.26 0.25 0.25]
 
 
 ```
@@ -277,18 +296,18 @@ print("Epoch_losses", np.array(epoch_losses).round(2))
 
 ```
 ```python
-Epoch 1: 6.7826828956604
-Epoch 2: 5.437911033630371
-Epoch 3: 4.144653797149658
-Epoch 4: 3.28253173828125
-Epoch 5: 2.997318983078003
-Epoch_losses [6.78 5.44 4.14 3.28 3.  ]
+Epoch 1: -0.7875077128410339
+Epoch 2: -0.8151381611824036
+Epoch 3: -0.9291865229606628
+Epoch 4: -1.9994704723358154
+Epoch 5: -2.32348895072937
+Epoch_losses [-0.79 -0.82 -0.93 -2.   -2.32]
 
-  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  1.37it/s]100%|██████████| 1/1 [00:00<00:00,  1.37it/s]
-  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 412.14it/s]
-  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 1167.03it/s]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  1.36it/s]100%|██████████| 1/1 [00:00<00:00,  1.36it/s]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 581.17it/s]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 1076.84it/s]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 1198.37it/s]
   0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 1208.38it/s]
-  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 1212.23it/s]
 
 ```
 
@@ -337,19 +356,19 @@ print(unraveled_params)
 ```python
 Before
 {'0.weight': Parameter containing:
-tensor([[ 0.0523,  0.0204,  0.2655],
-        [ 0.3896, -0.4301,  0.3878]], requires_grad=True), '0.bias': Parameter containing:
-tensor([0.3065, 0.1819], requires_grad=True), '2.weight': Parameter containing:
-tensor([[-0.3669,  0.7047]], requires_grad=True), '2.bias': Parameter containing:
-tensor([-0.2404], requires_grad=True)}
+tensor([[-0.1172,  0.1053, -0.3732],
+        [ 0.1407,  0.4086,  0.4325]], requires_grad=True), '0.bias': Parameter containing:
+tensor([ 0.2276, -0.0026], requires_grad=True), '2.weight': Parameter containing:
+tensor([[0.5320, 0.3535]], requires_grad=True), '2.bias': Parameter containing:
+tensor([-0.7025], requires_grad=True)}
 
 After ravel
-tensor([ 0.3065,  0.1819,  0.0523,  0.0204,  0.2655,  0.3896, -0.4301,  0.3878,
-        -0.2404, -0.3669,  0.7047], grad_fn=<CatBackward0>)
+tensor([ 0.2276, -0.0026, -0.1172,  0.1053, -0.3732,  0.1407,  0.4086,  0.4325,
+        -0.7025,  0.5320,  0.3535], grad_fn=<CatBackward0>)
 
 After unravel
-{'0.weight': tensor([[ 0.0523,  0.0204,  0.2655],
-        [ 0.3896, -0.4301,  0.3878]], grad_fn=<ViewBackward0>), '0.bias': tensor([0.3065, 0.1819], grad_fn=<ViewBackward0>), '2.weight': tensor([[-0.3669,  0.7047]], grad_fn=<ViewBackward0>), '2.bias': tensor([-0.2404], grad_fn=<ViewBackward0>)}
+{'0.weight': tensor([[-0.1172,  0.1053, -0.3732],
+        [ 0.1407,  0.4086,  0.4325]], grad_fn=<ViewBackward0>), '0.bias': tensor([ 0.2276, -0.0026], grad_fn=<ViewBackward0>), '2.weight': tensor([[0.5320, 0.3535]], grad_fn=<ViewBackward0>), '2.bias': tensor([-0.7025], grad_fn=<ViewBackward0>)}
 
 
 ```

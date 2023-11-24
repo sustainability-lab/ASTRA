@@ -19,6 +19,10 @@ def count_params(model):
     }
 
 
+def get_model_device(model):
+    return next(model.parameters()).device
+
+
 def train_fn(
     model: torch.nn.Module,
     loss_fn: callable,

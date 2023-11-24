@@ -14,6 +14,25 @@
 
 "**A**I for **S**ustainability" **T**oolkit for **R**esearch and **A**nalysis. ASTRA (अस्त्र) means a "tool" or "a weapon" in Sanskrit.
 
+# Design Principles
+Since `astra` is developed for research purposes, we'd try to adhere to these principles:
+
+## What we will try to do:
+1. Keep the API simple-to-use and standardized to enable quick prototyping via automated scripts.
+2. Keep the API transparent to expose as many details as possilbe. Explicit should be preferred over implicit.
+3. Keep the API flexible to allow users to stretch the limits of their experiments.
+
+## What we will try to avoid:
+4. We will try not to reduce code repeatation at expence of transparency, flexibility and performance. Too much abstraction often makes the API complex to understand and thus becomes hard to adapt for custom use cases.
+
+## Examples
+| Points | Example |
+| --- | --- |
+| 1 and 2 | We have exactly same arguments for all strategies in `astra.torch.al.strategies` to ease the automation but we explicitely mention in the docstrings if an argument is used or ignored for a strategy. |
+| 2 | predict functions in `astra` by default put the model on `eval` mode but also allow to set `eval_mode` to `False`. This can be useful for techniques like [MC dropout](https://arxiv.org/abs/1506.02142).
+| 3 | `train_fn` from `astra.torch.utils` works for all types of models and losses which may or may not be from `astra`.
+| 4 | Though F1 score can be computed from precision and recall, we explicitely use F1 score formula to allow transparency and to avoid computing `TP` multiple times.
+
 # Install
 
 Stable version:
