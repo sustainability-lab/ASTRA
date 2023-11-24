@@ -147,3 +147,8 @@ def ravel_pytree(pytree):
         return optree.tree_unflatten(structure, leaves)
 
     return flat_params, unravel_function
+
+def torch_set_diff1d(a, b):
+    """Return the elements in `a` that are not in `b`."""
+    mask = ~a.unsqueeze(1).eq(b).any(-1)
+    return torch.masked_select(a, mask)
