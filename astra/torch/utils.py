@@ -2,7 +2,6 @@ from copy import deepcopy
 from tqdm import tqdm
 import torch
 from torch.utils.data import TensorDataset, DataLoader
-import optree
 from typing import Optional
 
 
@@ -133,19 +132,3 @@ def train_fn(
         return (iter_losses, epoch_losses), state_dict_list
     else:
         return iter_losses, epoch_losses
-
-
-def ravel_pytree(pytree):
-    leaves, structure = optree.tree_flatten(pytree)
-    shapes = [leaf.shape for leaf in leaves]
-    sizes = [leaf.numel() for leaf in leaves]
-    flat_params = torch.cat([leaf.flatten() for leaf in leaves])
-
-    def unravel_function(flat_params):
-        assert flat_params.numel() == sum(sizes), f"Invalid flat_params size {flat_params.numel()} != {sum(sizes)}"
-        assert len(flat_params.shape) == 1, f"Invalid flat_params shape {flat_params.shape}"
-        flat_leaves = flat_params.split(sizes)
-        leaves = [leaf.reshape(shape) for leaf, shape in zip(flat_leaves, shapes)]
-        return optree.tree_unflatten(structure, leaves)
-
-    return flat_params, unravel_function

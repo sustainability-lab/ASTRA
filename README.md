@@ -237,9 +237,9 @@ print(np.array(epoch_losses).round(2))
 
 ```
 ```python
-[ 0.71  0.68 17.56 15.31  2.18]
-[0.37 0.33 0.29 0.26 0.25]
-[0.25 0.25 0.25 0.25 0.25]
+[0.65 0.64 0.64 0.64 0.64]
+[0.28 0.26 0.25 0.25 0.25]
+[0.26 0.25 0.25 0.25 0.25]
 
 
 ```
@@ -297,9 +297,9 @@ print("Epoch_losses", np.array(epoch_losses).round(2))
 
 ```
 ```python
-Epoch_losses [-154.51 -197.55 -217.29 -282.91 -318.66]
+Epoch_losses [2.61 1.54 2.71 2.61 2.65]
 
-  0%|          | 0/5 [00:00<?, ?it/s]Loss: -154.51182556:   0%|          | 0/5 [00:00<?, ?it/s]Loss: -154.51182556:  20%|██        | 1/5 [00:00<00:03,  1.33it/s]Loss: -197.54919434:  20%|██        | 1/5 [00:00<00:03,  1.33it/s]Loss: -217.29011536:  20%|██        | 1/5 [00:00<00:03,  1.33it/s]Loss: -282.90725708:  20%|██        | 1/5 [00:00<00:03,  1.33it/s]Loss: -318.66284180:  20%|██        | 1/5 [00:00<00:03,  1.33it/s]Loss: -318.66284180: 100%|██████████| 5/5 [00:00<00:00,  6.59it/s]
+  0%|          | 0/5 [00:00<?, ?it/s]Loss: 2.60764122:   0%|          | 0/5 [00:00<?, ?it/s]Loss: 2.60764122:  20%|██        | 1/5 [00:00<00:02,  1.49it/s]Loss: 1.54055369:  20%|██        | 1/5 [00:00<00:02,  1.49it/s]Loss: 2.71163487:  20%|██        | 1/5 [00:00<00:02,  1.49it/s]Loss: 2.60861230:  20%|██        | 1/5 [00:00<00:02,  1.49it/s]Loss: 2.64996576:  20%|██        | 1/5 [00:00<00:02,  1.49it/s]Loss: 2.64996576: 100%|██████████| 5/5 [00:00<00:00,  7.39it/s]
 
 ```
 
@@ -318,76 +318,6 @@ print(n_params)
 ```
 ```python
 {'total_params': 58, 'trainable_params': 58, 'non_trainable_params': 0}
-
-
-```
-
-### Flatten/Unflatten the weights of a model
-
-#### Simple Example
-```python
-import torch
-import torch.nn as nn
-from astra.torch.utils import ravel_pytree
-import optree
-
-model = nn.Sequential(*[nn.Linear(3, 2), nn.ReLU(), nn.Linear(2, 1)])
-params = dict(model.named_parameters())
-
-flat_params, unravel_fn = ravel_pytree(params)
-unraveled_params = unravel_fn(flat_params)  # returns the original params
-
-print("Before")
-print(params)
-print("\nAfter ravel")
-print(flat_params)
-print("\nAfter unravel")
-print(unraveled_params)
-
-```
-```python
-Before
-{'0.weight': Parameter containing:
-tensor([[-0.1981,  0.0046,  0.1901],
-        [-0.1083,  0.1330, -0.2079]], requires_grad=True), '0.bias': Parameter containing:
-tensor([ 0.4904, -0.2374], requires_grad=True), '2.weight': Parameter containing:
-tensor([[-0.5294,  0.1141]], requires_grad=True), '2.bias': Parameter containing:
-tensor([-0.2028], requires_grad=True)}
-
-After ravel
-tensor([ 0.4904, -0.2374, -0.1981,  0.0046,  0.1901, -0.1083,  0.1330, -0.2079,
-        -0.2028, -0.5294,  0.1141], grad_fn=<CatBackward0>)
-
-After unravel
-{'0.weight': tensor([[-0.1981,  0.0046,  0.1901],
-        [-0.1083,  0.1330, -0.2079]], grad_fn=<ViewBackward0>), '0.bias': tensor([ 0.4904, -0.2374], grad_fn=<ViewBackward0>), '2.weight': tensor([[-0.5294,  0.1141]], grad_fn=<ViewBackward0>), '2.bias': tensor([-0.2028], grad_fn=<ViewBackward0>)}
-
-
-```
-
-#### Advanced Example
-```python
-import torch
-from astra.torch.models import ViTClassifier
-from torchvision.models import vit_b_16, ViT_B_16_Weights
-from astra.torch.utils import ravel_pytree
-import optree
-
-model = ViTClassifier(vit_b_16, ViT_B_16_Weights.DEFAULT, n_classes=10)
-params = dict(model.named_parameters())
-
-flat_params, unravel_fn = ravel_pytree(params)
-unraveled_params = unravel_fn(flat_params)  # returns the original params
-
-# check if the tree structure is preserved
-assert optree.tree_structure(params) == optree.tree_structure(unraveled_params)
-
-# check if the values are preserved
-for before_leaf, after_leaf in zip(optree.tree_leaves(params), optree.tree_leaves(unraveled_params)):
-    assert torch.all(before_leaf == after_leaf)
-
-```
-```python
 
 
 ```

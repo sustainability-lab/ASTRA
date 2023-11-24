@@ -3,11 +3,8 @@ import torch
 import torch.nn as nn
 import torch.distributions as dist
 
-import optree
-from torchvision.models import vit_b_16, ViT_B_16_Weights
-
-from astra.torch.models import CNNClassifier, MLPRegressor, ViTRegressor
-from astra.torch.utils import train_fn, count_params, ravel_pytree
+from astra.torch.models import CNNClassifier, MLPRegressor
+from astra.torch.utils import train_fn, count_params
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -34,21 +31,6 @@ def test_count_params(model, expected_size):
     assert counts["total_params"] == expected_size
     assert counts["trainable_params"] == expected_size
     assert counts["non_trainable_params"] == 0
-
-
-def test_ravel_pytree():
-    # Testing on most complex model
-    model = ViTRegressor(vit_b_16, ViT_B_16_Weights.DEFAULT, output_dim=3)
-    params = dict(model.named_parameters())
-    flat_params, unravel_function = ravel_pytree(params)
-    unraveled_params = unravel_function(flat_params)
-
-    # Assert structure is the same
-    optree.tree_structure(params) == optree.tree_structure(unraveled_params)
-
-    # Assert values are the same
-    for k, v in params.items():
-        assert torch.all(v == unraveled_params[k])
 
 
 def test_train_fn():

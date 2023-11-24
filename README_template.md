@@ -131,23 +131,3 @@ Please go through the [contributing guidelines](CONTRIBUTING.md) before making a
 {{ count_params_output }}
 {{ count_params_error }}
 ```
-
-### Flatten/Unflatten the weights of a model
-
-#### Simple Example
-```python
-{{ ravel_pytree_simple }}
-```
-```python
-{{ ravel_pytree_simple_output }}
-{{ ravel_pytree_simple_error }}
-```
-
-#### Advanced Example
-```python
-{{ ravel_pytree_advanced }}
-```
-```python
-{{ ravel_pytree_advanced_output }}
-{{ ravel_pytree_advanced_error }}
-```
