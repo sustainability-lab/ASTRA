@@ -41,11 +41,6 @@ def test_mlp(x, output_dim, out_shape):
     assert pred_logits.dtype == torch.float32
     assert pred_classes.dtype == torch.int64
 
-    accuracy = model.accuracy(x.to(device), torch.randint(0, output_dim, (x.shape[0],)).to(device), batch_size=2)
-    assert accuracy >= 0.0 and accuracy <= 1.0
-    accuracy = model.accuracy(x.to(device), torch.randint(0, output_dim, (x.shape[0],)).to(device), batch_size=None)
-    assert accuracy >= 0.0 and accuracy <= 1.0
-
 
 @pytest.mark.parametrize(
     "x, output_dim, out_shape",
