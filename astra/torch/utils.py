@@ -1,6 +1,6 @@
-from copy import deepcopy
 from tqdm import tqdm
 import torch
+import optree
 from torch.utils.data import TensorDataset, DataLoader
 from typing import Optional
 
@@ -58,7 +58,7 @@ def train_fn(
         If `return_state_dict` is False:
             (iter_losses, epoch_losses)
         Else:
-            ((iter_losses, epoch_losses), state_dict_list)
+            ((iter_losses, epoch_losses), state_dict_history)
     """
 
     def get_batch():
@@ -92,10 +92,12 @@ def train_fn(
 
             yield batch_input, batch_output
 
+    device = get_model_device(model)
+
     def one_step(batch_input, batch_output):
         optimizer.zero_grad()
-        model_output = model(batch_input, **model_kwargs)
-        loss = loss_fn(model_output, batch_output, **loss_fn_kwargs)
+        model_output = model(batch_input.to(device), **model_kwargs)
+        loss = loss_fn(model_output, batch_output.to(device), **loss_fn_kwargs)
         loss.backward()
         optimizer.step()
         return loss.item()
@@ -106,7 +108,7 @@ def train_fn(
 
     iter_losses = []
     epoch_losses = []
-    state_dict_list = []
+    state_dict_history = []
 
     pbar = range(epochs)
     if verbose:
@@ -120,7 +122,8 @@ def train_fn(
             loss_buffer.append(loss)
 
             if return_state_dict:
-                state_dict_list.append(deepcopy(model.state_dict()))
+                # state_dict history should be on CPU to avoid unnecessary clogging of GPU memory
+                state_dict_history.append(optree.tree_map(lambda x: x.cpu(), model.state_dict()))
 
         epoch_loss = sum(loss_buffer) / len(loss_buffer)
         epoch_losses.append(epoch_loss)
@@ -129,6 +132,6 @@ def train_fn(
             pbar.set_description(f"Loss: {epoch_loss:.8f}")
 
     if return_state_dict:
-        return (iter_losses, epoch_losses), state_dict_list
+        return (iter_losses, epoch_losses), state_dict_history
     else:
         return iter_losses, epoch_losses
