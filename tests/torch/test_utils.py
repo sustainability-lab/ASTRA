@@ -52,7 +52,7 @@ def test_train_fn():
 
     # without verbose
     iter_losses, epoch_losses = train_fn(
-        model, loss_fn, inputs.to(device), outputs.to(device), lr, n_epochs, verbose=False
+        model, loss_fn, input=inputs.to(device), output=outputs.to(device), lr=lr, epochs=n_epochs, verbose=False
     )
 
     assert epoch_losses[-1] < epoch_losses[0], "Loss should decrease"
@@ -61,7 +61,7 @@ def test_train_fn():
 
     # wihout shuffle
     iter_losses, epoch_losses = train_fn(
-        model, loss_fn, inputs.to(device), outputs.to(device), lr, n_epochs, shuffle=False
+        model, loss_fn, input=inputs.to(device), output=outputs.to(device), lr=lr, epochs=n_epochs, shuffle=False
     )
 
     assert epoch_losses[-1] < epoch_losses[0], "Loss should decrease"
