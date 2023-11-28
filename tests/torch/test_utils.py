@@ -124,3 +124,23 @@ def test_train_fn_wihout_outputs():
     iter_losses, epoch_losses = train_fn(model, loss_fn, input.to(device), output=None, lr=1e-4, epochs=10)
 
     assert epoch_losses[-1] < epoch_losses[0], "Loss should decrease"
+
+
+def test_train_fn_with_dataloader():
+    torch.manual_seed(0)
+    input = torch.randn(10, 3)
+    output = torch.randn(10, 1)
+
+    model = MLPRegressor(input_dim=3, hidden_dims=[4, 5], output_dim=1).to(device)
+
+    def loss_fn(model_output, output):
+        return model_output.mean()
+
+    from torch.utils.data import TensorDataset, DataLoader
+
+    dataset = TensorDataset(input, output)
+    dataloader = DataLoader(dataset, batch_size=2, shuffle=True)
+
+    iter_losses, epoch_losses = train_fn(model, loss_fn, dataloader=dataloader, lr=1e-4, epochs=10)
+
+    assert epoch_losses[-1] < epoch_losses[0], "Loss should decrease"
