@@ -68,9 +68,10 @@ def test_cnn(x):
     conv_hidden_dims = [4, 4, 7]
     dense_hidden_dims = [7, 9]
     output_dim = 12
+    dropout = 0.1
 
     model = models.CNNClassifier(
-        image_dim, kernel_size, n_channels, conv_hidden_dims, dense_hidden_dims, output_dim
+        image_dim, kernel_size, n_channels, conv_hidden_dims, dense_hidden_dims, output_dim, dropout=dropout
     ).to(device)
     out = model(x.to(device))
 
@@ -84,9 +85,9 @@ def test_cnn(x):
 
     assert out.shape == torch.Size([batch_dim, output_dim])
 
-    model = models.CNNRegressor(image_dim, kernel_size, n_channels, conv_hidden_dims, dense_hidden_dims, output_dim).to(
-        device
-    )
+    model = models.CNNRegressor(
+        image_dim, kernel_size, n_channels, conv_hidden_dims, dense_hidden_dims, output_dim, dropout=dropout
+    ).to(device)
     out = model(x.to(device))
 
     assert out.shape == torch.Size([batch_dim, output_dim])

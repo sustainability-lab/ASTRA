@@ -35,22 +35,45 @@ WeightsEnum.get_state_dict = get_state_dict
 
 # Base class for all ASTRA models
 class AstraModel(nn.Module):
-    def predict(self, X, batch_size=None, device=None, eval_mode: bool = True):
-        if batch_size is None:
-            batch_size = len(X)
-        if device is None:
-            device = get_model_device(self)
-
+    def predict(self, X=None, dataloader=None, batch_size=None, eval_mode: bool = True, verbose=True):
+        device = get_model_device(self)
         if eval_mode:
             self.eval()
-        with torch.no_grad():
+        else:
+            self.train()
+
+        assert (X is not None) ^ (dataloader is not None), "Either X or dataloader should be provided, but not both."
+
+        if X is not None:
+            if batch_size is None:
+                batch_size = len(X)
+
             preds = []
-            for i in tqdm(range(0, len(X), batch_size)):
+            pbar = range(0, len(X), batch_size)
+            if verbose:
+                pbar = tqdm(pbar)
+            for i in pbar:
                 pred = self(X[i : i + batch_size].to(device))
                 preds.append(pred)
             pred = torch.cat(preds)
 
-        return pred
+            return pred
+
+        elif dataloader is not None:
+            preds = []
+            pbar = dataloader
+            if verbose:
+                pbar = tqdm(pbar)
+            for batch_input, _ in pbar:
+                batch_input = batch_input.to(device)
+                pred = self(batch_input)
+                preds.append(pred)
+            pred = torch.cat(preds)
+
+            return pred
+
+        else:
+            raise ValueError("Either X or dataloader should be provided. This should never happen. Contact Zeel.")
 
 
 # Classifier and regressor base classes
@@ -65,8 +88,8 @@ class Classifier(AstraModel):
         x = self.classifier(x)
         return x
 
-    def predict_class(self, X, batch_size=None, device=None, eval_mode=True):
-        logits = self.predict(X, batch_size, device, eval_mode)
+    def predict_class(self, X=None, dataloader=None, batch_size=None, eval_mode=True, verbose=True):
+        logits = self.predict(X, dataloader, batch_size, eval_mode, verbose)
         return logits.argmax(dim=1)
 
 
@@ -107,7 +130,7 @@ class MLP(AstraModel):
 
         # One time initialization layers
         self.activation = activation
-        self.dropout = nn.Dropout(dropout, inplace=True)
+        self.dropout = nn.Dropout(dropout)
 
         # Define input layer
         self.input_layer = nn.Linear(input_dim, self.hidden_dims[0])
