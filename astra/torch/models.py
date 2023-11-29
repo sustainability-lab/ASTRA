@@ -4,15 +4,21 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from torchvision.models.efficientnet import EfficientNet as _EfficientNet  # To prevent auto import
-from torchvision.models.vision_transformer import VisionTransformer as _VisionTransformer  # To prevent auto import
-from torchvision.models.resnet import ResNet as _ResNet  # To prevent auto import
+from torchvision.models.efficientnet import (
+    EfficientNet as _EfficientNet,
+)  # To prevent users from importing EfficientNet from torchvision
+from torchvision.models.vision_transformer import VisionTransformer as _VisionTransformer  # To prevent ...
+from torchvision.models.resnet import ResNet as _ResNet  # To prevent ...
+from torchvision.models.densenet import DenseNet as _DenseNet  # To prevent ...
+from torchvision.models.alexnet import AlexNet as _AlexNet  # To prevent ...
 from torchvision.models._api import WeightsEnum
 
 
 from torchvision.models import efficientnet_b0, EfficientNet_B0_Weights
 from torchvision.models import vit_b_16, ViT_B_16_Weights
 from torchvision.models import resnet18, ResNet18_Weights
+from torchvision.models import densenet121, DenseNet121_Weights
+from torchvision.models import alexnet, AlexNet_Weights
 
 ## Hotfix for https://github.com/pytorch/vision/issues/7744#issuecomment-1757321451
 from torchvision.models._api import WeightsEnum
@@ -156,7 +162,7 @@ class MLP(AstraModel):
 
 
 class MLPClassifier(Classifier):
-    def __init__(self, input_dim, hidden_dims, n_classes, activation=nn.ReLU(), dropout=0.0):
+    def __init__(self, input_dim, hidden_dims, n_classes=2, activation=nn.ReLU(), dropout=0.0):
         """Multi-Layer Perceptron (MLP) classifier.
 
         Args:
@@ -296,7 +302,7 @@ class CNNClassifier(Classifier):
         input_channels: int,
         conv_hidden_dims: list,
         dense_hidden_dims: list,
-        n_classes: int,
+        n_classes: int = 2,
         activation: nn.Module = nn.ReLU(),
         dropout: float = 0.0,
         adaptive_pooling: bool = False,
@@ -390,7 +396,7 @@ class ResNetClassifier(Classifier):
         self,
         model: _ResNet = resnet18,
         weights: WeightsEnum = ResNet18_Weights.DEFAULT,
-        n_classes: int = 1,
+        n_classes: int = 2,
         transform: bool = False,
         dense_hidden_dims: list = [512],
         activation: nn.Module = nn.ReLU(),
@@ -467,7 +473,7 @@ class EfficientNetClassifier(Classifier):
         self,
         model: _EfficientNet = efficientnet_b0,
         weights: WeightsEnum = EfficientNet_B0_Weights.DEFAULT,
-        n_classes: int = 1,
+        n_classes: int = 2,
         transform: bool = False,
         dense_hidden_dims: list = [512],
         activation: nn.Module = nn.ReLU(),
@@ -516,6 +522,158 @@ class EfficientNetRegressor(Regressor):
         super().__init__(featurizer, regressor)
 
 
+class DenseNet(AstraModel):
+    """DenseNet. See https://arxiv.org/abs/1608.06993 (Densely Connected Convolutional Networks by Huang et al.)"""
+
+    def __init__(
+        self,
+        model: _DenseNet = densenet121,
+        weights: WeightsEnum = DenseNet121_Weights.DEFAULT,
+        transform: bool = False,
+    ):
+        super().__init__()
+
+        self.transform = weights.transforms() if transform else None
+        self.densenet = model(weights=weights)
+        self.densenet.classifier = nn.Identity()
+
+    def forward(self, x):
+        if self.transform is not None:
+            x = self.transform(x)
+        x = self.densenet(x)
+        return x
+
+
+class DenseNetClassifier(Classifier):
+    def __init__(
+        self,
+        model: _DenseNet = densenet121,
+        weights: WeightsEnum = DenseNet121_Weights.DEFAULT,
+        n_classes: int = 2,
+        transform: bool = False,
+        dense_hidden_dims: list = [512],
+        activation: nn.Module = nn.ReLU(),
+        dropout: float = 0.0,
+    ):
+        """DenseNet classifier.
+
+        Args:
+            model (_DenseNet, optional): _description_. Defaults to densenet121.
+            weights (WeightsEnum, optional): _description_. Defaults to DenseNet121_Weights.DEFAULT.
+            transform (bool, optional): _description_. Defaults to False.
+            dense_hidden_dims (list, optional): _description_. Defaults to [512].
+            activation (nn.Module, optional): _description_. Defaults to nn.ReLU().
+            n_classes (int, optional): _description_. Defaults to 1.
+        """
+        featurizer = DenseNet(model, weights, transform)
+        # DenseNet uses AdaptiveAvgPool2d so output_dim is always 1024
+        classifier = MLPClassifier(1024, dense_hidden_dims, n_classes, activation, dropout)
+        super().__init__(featurizer, classifier)
+
+
+class DenseNetRegressor(Regressor):
+    def __init__(
+        self,
+        model: _DenseNet = densenet121,
+        weights: WeightsEnum = DenseNet121_Weights.DEFAULT,
+        output_dim: int = 1,
+        transform: bool = False,
+        dense_hidden_dims: list = [512],
+        activation: nn.Module = nn.ReLU(),
+        dropout: float = 0.0,
+    ):
+        """DenseNet regressor.
+
+        Args:
+            model (_DenseNet, optional): _description_. Defaults to densenet121.
+            weights (WeightsEnum, optional): _description_. Defaults to DenseNet121_Weights.DEFAULT.
+            transform (bool, optional): _description_. Defaults to False.
+            dense_hidden_dims (list, optional): _description_. Defaults to [512].
+            activation (nn.Module, optional): _description_. Defaults to nn.ReLU().
+            output_dim (int, optional): _description_. Defaults to 1.
+        """
+        featurizer = DenseNet(model, weights, transform)
+        # DenseNet uses AdaptiveAvgPool2d so output_dim is always 1024
+        regressor = MLPRegressor(1024, dense_hidden_dims, output_dim, activation, dropout)
+        super().__init__(featurizer, regressor)
+
+
+class AlexNet(AstraModel):
+    """AlexNet. See https://arxiv.org/abs/1404.5997 (ImageNet Classification with Deep Convolutional Neural Networks by Krizhevsky et al.)"""
+
+    def __init__(
+        self,
+        model: _AlexNet = alexnet,
+        weights: WeightsEnum = AlexNet_Weights.DEFAULT,
+        transform: bool = False,
+    ):
+        super().__init__()
+
+        self.transform = weights.transforms() if transform else None
+        self.alexnet = model(weights=weights)
+        self.alexnet.classifier._modules["6"] = nn.Identity()
+
+    def forward(self, x):
+        if self.transform is not None:
+            x = self.transform(x)
+        x = self.alexnet(x)
+        return x
+
+
+class AlexNetClassifier(Classifier):
+    def __init__(
+        self,
+        model: _AlexNet = alexnet,
+        weights: WeightsEnum = AlexNet_Weights.DEFAULT,
+        n_classes: int = 2,
+        transform: bool = False,
+        dense_hidden_dims: list = [512],
+        activation: nn.Module = nn.ReLU(),
+        dropout: float = 0.0,
+    ):
+        """AlexNet classifier.
+
+        Args:
+            model (_AlexNet, optional): _description_. Defaults to alexnet.
+            weights (WeightsEnum, optional): _description_. Defaults to AlexNet_Weights.DEFAULT.
+            transform (bool, optional): _description_. Defaults to False.
+            dense_hidden_dims (list, optional): _description_. Defaults to [512].
+            activation (nn.Module, optional): _description_. Defaults to nn.ReLU().
+            n_classes (int, optional): _description_. Defaults to 1.
+        """
+        featurizer = AlexNet(model, weights, transform)
+        # AlexNet uses AdaptiveAvgPool2d so output_dim is always 4096
+        classifier = MLPClassifier(4096, dense_hidden_dims, n_classes, activation, dropout)
+        super().__init__(featurizer, classifier)
+
+
+class AlexNetRegressor(Regressor):
+    def __init__(
+        self,
+        model: _AlexNet = alexnet,
+        weights: WeightsEnum = AlexNet_Weights.DEFAULT,
+        output_dim: int = 1,
+        transform: bool = False,
+        dense_hidden_dims: list = [512],
+        activation: nn.Module = nn.ReLU(),
+        dropout: float = 0.0,
+    ):
+        """AlexNet regressor.
+
+        Args:
+            model (_AlexNet, optional): _description_. Defaults to alexnet.
+            weights (WeightsEnum, optional): _description_. Defaults to AlexNet_Weights.DEFAULT.
+            transform (bool, optional): _description_. Defaults to False.
+            dense_hidden_dims (list, optional): _description_. Defaults to [512].
+            activation (nn.Module, optional): _description_. Defaults to nn.ReLU().
+            output_dim (int, optional): _description_. Defaults to 1.
+        """
+        featurizer = AlexNet(model, weights, transform)
+        # AlexNet uses AdaptiveAvgPool2d so output_dim is always 4096
+        regressor = MLPRegressor(4096, dense_hidden_dims, output_dim, activation, dropout)
+        super().__init__(featurizer, regressor)
+
+
 class ViT(AstraModel):
     def __init__(
         self,
@@ -544,7 +702,7 @@ class ViTClassifier(Classifier):
         self,
         model: _VisionTransformer = vit_b_16,
         weights: WeightsEnum = ViT_B_16_Weights.DEFAULT,
-        n_classes: int = 1,
+        n_classes: int = 2,
         transform: bool = False,
         dense_hidden_dims: list = [512],
         activation: nn.Module = nn.ReLU(),

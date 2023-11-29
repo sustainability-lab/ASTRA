@@ -111,6 +111,15 @@ Please go through the [contributing guidelines](CONTRIBUTING.md) before making a
 {{ quick_train_error }}
 ```
 
+### Train with DataLoader
+```python
+{{ train_with_dataloader }}
+```
+```python
+{{ train_with_dataloader_output }}
+{{ train_with_dataloader_error }}
+```
+
 
 ### Advanced Usage
 ```python

@@ -8,6 +8,10 @@ from torchvision.models import (
     ViT_B_16_Weights,
     resnet18,
     ResNet18_Weights,
+    alexnet,
+    AlexNet_Weights,
+    densenet121,
+    DenseNet121_Weights,
 )
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -155,6 +159,36 @@ def test_vit(x, output_dim):
 
     model = models.ViTRegressor(vit_b_16, ViT_B_16_Weights.DEFAULT, output_dim, transform=True).to(device)
 
+    out = model(x.to(device))
+
+    assert out.shape == torch.Size([batch_dim, output_dim])
+
+
+@pytest.mark.parametrize("x, output_dim", [(torch.randn(11, 3, 512, 246), 4), (torch.randn(11, 3, 224, 224), 6)])
+def test_alexnet(x, output_dim):
+    batch_dim = x.shape[0]
+
+    model = models.AlexNetClassifier(alexnet, AlexNet_Weights.DEFAULT, output_dim).to(device)
+    out = model(x.to(device))
+
+    assert out.shape == torch.Size([batch_dim, output_dim])
+
+    model = models.AlexNetRegressor(alexnet, AlexNet_Weights.DEFAULT, output_dim).to(device)
+    out = model(x.to(device))
+
+    assert out.shape == torch.Size([batch_dim, output_dim])
+
+
+@pytest.mark.parametrize("x, output_dim", [(torch.randn(11, 3, 512, 246), 4), (torch.randn(11, 3, 224, 224), 6)])
+def test_densenet(x, output_dim):
+    batch_dim = x.shape[0]
+
+    model = models.DenseNetClassifier(densenet121, DenseNet121_Weights.DEFAULT, output_dim).to(device)
+    out = model(x.to(device))
+
+    assert out.shape == torch.Size([batch_dim, output_dim])
+
+    model = models.DenseNetRegressor(densenet121, DenseNet121_Weights.DEFAULT, output_dim).to(device)
     out = model(x.to(device))
 
     assert out.shape == torch.Size([batch_dim, output_dim])

@@ -106,9 +106,7 @@ def train_fn(
         loss.backward()
         optimizer.step()
         loss_item = loss.item()
-        if wandb_log:
-            wandb.log({"loss": loss_item})
-        return loss
+        return loss_item
 
     model.train()
     if optimizer is None:
@@ -134,6 +132,8 @@ def train_fn(
             batch_output = batch_output.to(device) if isinstance(batch_output, torch.Tensor) else batch_output
 
             loss = one_step(batch_input, batch_output)
+            if wandb_log:
+                wandb.log({"loss": loss})
             iter_losses.append(loss)
             loss_buffer.append(loss)
 

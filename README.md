@@ -90,7 +90,7 @@ print(mlp)
 ```python
 MLPRegressor(
   (featurizer): MLP(
-    (dropout): Dropout(p=0.1, inplace=True)
+    (dropout): Dropout(p=0.1, inplace=False)
     (input_layer): Linear(in_features=100, out_features=128, bias=True)
     (hidden_layer_1): Linear(in_features=128, out_features=64, bias=True)
   )
@@ -128,7 +128,7 @@ CNNClassifier(
   (classifier): MLPClassifier(
     (featurizer): MLP(
       (activation): ReLU()
-      (dropout): Dropout(p=0.0, inplace=True)
+      (dropout): Dropout(p=0.0, inplace=False)
       (input_layer): Linear(in_features=4096, out_features=128, bias=True)
       (hidden_layer_1): Linear(in_features=128, out_features=64, bias=True)
     )
@@ -237,10 +237,50 @@ print(np.array(epoch_losses).round(2))
 
 ```
 ```python
-[0.65 0.64 0.64 0.64 0.64]
-[0.28 0.26 0.25 0.25 0.25]
-[0.26 0.25 0.25 0.25 0.25]
+[0.72 0.7  0.7  0.7  0.7 ]
+[1.   0.84 0.7  0.58 0.48]
+[0.4  0.33 0.29 0.26 0.25]
 
+
+```
+
+### Train with DataLoader
+```python
+import torch
+import torch.nn as nn
+from torch.utils.data import TensorDataset, DataLoader
+
+import numpy as np
+from astra.torch.utils import train_fn
+from astra.torch.models import CNNClassifier
+
+torch.autograd.set_detect_anomaly(True)
+
+X = torch.rand(100, 3, 28, 28)
+y = torch.randint(0, 2, size=(200,)).reshape(100, 2).float()
+
+model = CNNClassifier(
+    image_dims=(28, 28), kernel_size=5, input_channels=3, conv_hidden_dims=[4], dense_hidden_dims=[2], n_classes=2
+)
+
+dataset = TensorDataset(X, y)
+dataloader = DataLoader(dataset, batch_size=32, shuffle=True, num_workers=2)
+
+# Let train_fn do the optimization for you
+iter_losses, epoch_losses = train_fn(
+    model,
+    dataloader=dataloader,
+    loss_fn=nn.CrossEntropyLoss(),
+    lr=0.1,
+    epochs=5,
+)
+print(np.array(epoch_losses).round(2))
+
+```
+```python
+[3.01 0.79 0.77 0.8  0.64]
+
+  0%|          | 0/5 [00:00<?, ?it/s]Loss: 3.00609981:   0%|          | 0/5 [00:00<?, ?it/s]Loss: 3.00609981:  20%|██        | 1/5 [00:00<00:02,  1.97it/s]Loss: 0.78690718:  20%|██        | 1/5 [00:00<00:02,  1.97it/s]Loss: 0.78690718:  40%|████      | 2/5 [00:00<00:00,  3.64it/s]Loss: 0.77431746:  40%|████      | 2/5 [00:00<00:00,  3.64it/s]Loss: 0.77431746:  60%|██████    | 3/5 [00:00<00:00,  4.79it/s]Loss: 0.79909155:  60%|██████    | 3/5 [00:00<00:00,  4.79it/s]Loss: 0.79909155:  80%|████████  | 4/5 [00:00<00:00,  5.12it/s]Loss: 0.64411481:  80%|████████  | 4/5 [00:01<00:00,  5.12it/s]Loss: 0.64411481: 100%|██████████| 5/5 [00:01<00:00,  5.76it/s]Loss: 0.64411481: 100%|██████████| 5/5 [00:01<00:00,  4.72it/s]
 
 ```
 
@@ -297,9 +337,9 @@ print("Epoch_losses", np.array(epoch_losses).round(2))
 
 ```
 ```python
-Epoch_losses [2.61 1.54 2.71 2.61 2.65]
+Epoch_losses [9.63 7.52 6.59 4.98 4.11]
 
-  0%|          | 0/5 [00:00<?, ?it/s]Loss: 2.60764122:   0%|          | 0/5 [00:00<?, ?it/s]Loss: 2.60764122:  20%|██        | 1/5 [00:00<00:02,  1.49it/s]Loss: 1.54055369:  20%|██        | 1/5 [00:00<00:02,  1.49it/s]Loss: 2.71163487:  20%|██        | 1/5 [00:00<00:02,  1.49it/s]Loss: 2.60861230:  20%|██        | 1/5 [00:00<00:02,  1.49it/s]Loss: 2.64996576:  20%|██        | 1/5 [00:00<00:02,  1.49it/s]Loss: 2.64996576: 100%|██████████| 5/5 [00:00<00:00,  7.39it/s]
+  0%|          | 0/5 [00:00<?, ?it/s]Loss: 9.63069725:   0%|          | 0/5 [00:00<?, ?it/s]Loss: 9.63069725:  20%|██        | 1/5 [00:00<00:00,  6.42it/s]Loss: 7.51600790:  20%|██        | 1/5 [00:00<00:00,  6.42it/s]Loss: 6.59280062:  20%|██        | 1/5 [00:00<00:00,  6.42it/s]Loss: 4.97779894:  20%|██        | 1/5 [00:00<00:00,  6.42it/s]Loss: 4.11271286:  20%|██        | 1/5 [00:00<00:00,  6.42it/s]Loss: 4.11271286: 100%|██████████| 5/5 [00:00<00:00, 31.35it/s]
 
 ```
 
