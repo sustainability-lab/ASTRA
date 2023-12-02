@@ -66,22 +66,33 @@ class EnsembleStrategy(Strategy):
         for model in net:
             model.eval()
 
-        with torch.no_grad():
-            logits_list = []
-            for x, _ in data_loader:
-                net_logits_list = []
-                for model in net:
-                    net_logits = model(x.to(self.device))[np.newaxis, ...]
-                    net_logits_list.append(net_logits)
-                logits = torch.cat(net_logits_list, dim=0)  # (n_nets, batch_dim, n_classes)
-                logits_list.append(logits)
-            logits = torch.cat(logits_list, dim=1)  # (n_nets, pool_dim, n_classes)
+        x = data_loader.dataset[0]
+        y= data_loader.dataset[1]
+        x=x.permute(0,3,1,2)
+        net_logits_list = []
+        for model in net:
+            net_logits = model(x.to(self.device))[np.newaxis, ...]
+            net_logits_list.append(net_logits)
+        logits = torch.cat(net_logits_list, dim=0)  # (n_nets, pool_dim, n_classes)
+        
+        # print(logits.shape)
+        # input()
+        # with torch.no_grad():
+            # logits_list = []
+            # for x, _ in data_loader:
+            #     net_logits_list = []
+            #     for model in net:
+            #         net_logits = model(x.to(self.device))[np.newaxis, ...]
+            #         net_logits_list.append(net_logits)
+            #     logits = torch.cat(net_logits_list, dim=0)  # (n_nets, batch_dim, n_classes)
+            #     logits_list.append(logits)
+            # logits = torch.cat(logits_list, dim=1)  # (n_nets, pool_dim, n_classes)
 
-            best_indices = {}
-            for acq_name, acquisition in self.acquisitions.items():
-                scores = acquisition.acquire_scores(logits)
-                index = torch.topk(scores, n_query_samples).indices
-                selected_indices = pool_indices[index]
-                best_indices[acq_name] = selected_indices
+        best_indices = {}
+        for acq_name, acquisition in self.acquisitions.items():
+            scores = acquisition.acquire_scores(logits)
+            index = torch.topk(scores, n_query_samples).indices
+            selected_indices = pool_indices[index.cpu()]
+            best_indices[acq_name] = selected_indices
 
         return best_indices

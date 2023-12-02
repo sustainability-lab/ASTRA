@@ -18,3 +18,4 @@ from astra.torch.al.acquisitions.base import (
 
 # Acquisition functions
 from astra.torch.al.acquisitions.uniform_random import UniformRandomAcquisition
+from astra.torch.al.acquisitions.entropy import EntropyAcquisition
