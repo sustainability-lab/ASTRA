@@ -7,17 +7,18 @@ from sklearn.metrics import (
     precision_score as sk_precision,
 )
 
-from astra.torch.metrics import accuracy_score, precision_score, recall_score, f1_score
+from astra.torch.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
 
 y = torch.randint(0, 2, (30,))
 y_pred = torch.randint(0, 2, (30,))
 target_accuracy = sk_accuracy(y.numpy(), y_pred.numpy())
-target_precision_1 = sk_precision(y.numpy(), y_pred.numpy(), pos_label=1)
-target_precision_0 = sk_precision(y.numpy(), y_pred.numpy(), pos_label=0)
-target_recal_1 = sk_recall(y.numpy(), y_pred.numpy(), pos_label=1)
-target_recal_0 = sk_recall(y.numpy(), y_pred.numpy(), pos_label=0)
-target_f1_1 = sk_f1(y.numpy(), y_pred.numpy(), pos_label=1)
-target_f1_0 = sk_f1(y.numpy(), y_pred.numpy(), pos_label=0)
+
+target_metrics = {0: {}, 1: {}}
+
+for positive_label in [0, 1]:
+    target_metrics[positive_label]["precision"] = sk_precision(y.numpy(), y_pred.numpy(), pos_label=positive_label)
+    target_metrics[positive_label]["recall"] = sk_recall(y.numpy(), y_pred.numpy(), pos_label=positive_label)
+    target_metrics[positive_label]["f1"] = sk_f1(y.numpy(), y_pred.numpy(), pos_label=positive_label)
 
 
 def test_accuracy():
@@ -25,15 +26,28 @@ def test_accuracy():
 
 
 def test_precision():
-    assert precision_score(y_pred, y, pos_label=1) == target_precision_1
-    assert precision_score(y_pred, y, pos_label=0) == target_precision_0
+    for positive_label in [0, 1]:
+        assert precision_score(y_pred, y, positive_label=positive_label) == target_metrics[positive_label]["precision"]
 
 
 def test_recall():
-    assert recall_score(y_pred, y, pos_label=1) == target_recal_1
-    assert recall_score(y_pred, y, pos_label=0) == target_recal_0
+    for positive_label in [0, 1]:
+        assert recall_score(y_pred, y, positive_label=positive_label) == target_metrics[positive_label]["recall"]
 
 
 def test_f1():
-    assert f1_score(y_pred, y, pos_label=1) == target_f1_1
-    assert f1_score(y_pred, y, pos_label=0) == target_f1_0
+    for positive_label in [0, 1]:
+        assert f1_score(y_pred, y, positive_label=positive_label) == target_metrics[positive_label]["f1"]
+
+
+def test_classification_report():
+    for positive_label in [0, 1]:
+        report = classification_report(y_pred, y, positive_label=positive_label)
+        f1 = f1_score(y_pred, y, positive_label=positive_label)
+        precision = precision_score(y_pred, y, positive_label=positive_label)
+        recall = recall_score(y_pred, y, positive_label=positive_label)
+        accuracy = accuracy_score(y_pred, y)
+        assert report["accuracy"] == accuracy
+        assert report["precision"] == precision
+        assert report["recall"] == recall
+        assert report["f1"] == f1
