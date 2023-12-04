@@ -82,5 +82,5 @@ class DiversityStrategy(Strategy):
                     context_features, pool_features, n_query_samples
                 )
                 selected_indices = torch.tensor(selected_indices) 
-                best_indices[acq_name] = selected_indices
+                best_indices[acq_name] = pool_indices[selected_indices]
         return best_indices
