@@ -39,3 +39,4 @@ def test_centroid():
 
     assert best_indices["Centroid"].shape == (n_query_samples,)
 
+# test_centroid()
