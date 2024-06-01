@@ -19,19 +19,12 @@ Since `astra` is developed for research purposes, we'd try to adhere to these pr
 
 ## What we will try to do:
 1. Keep the API simple-to-use and standardized to enable quick prototyping via automated scripts.
-2. Keep the API transparent to expose as many details as possilbe. Explicit should be preferred over implicit.
+2. Keep the API transparent to expose as many details as possible. Explicit should be preferred over implicit.
 3. Keep the API flexible to allow users to stretch the limits of their experiments.
+4. Don't provide defaults at most places. This will force the user to think about the choices they are making.
 
 ## What we will try to avoid:
-4. We will try not to reduce code repeatation at expence of transparency, flexibility and performance. Too much abstraction often makes the API complex to understand and thus becomes hard to adapt for custom use cases.
-
-## Examples
-| Points | Example |
-| --- | --- |
-| 1 and 2 | We have exactly same arguments for all strategies in `astra.torch.al.strategies` to ease the automation but we explicitely mention in the docstrings if an argument is used or ignored for a strategy. |
-| 2 | predict functions in `astra` by default put the model on `eval` mode but also allow to set `eval_mode` to `False`. This can be useful for techniques like [MC dropout](https://arxiv.org/abs/1506.02142).
-| 3 | `train_fn` from `astra.torch.utils` works for all types of models and losses which may or may not be from `astra`.
-| 4 | Though F1 score can be computed from precision and recall, we explicitely use F1 score formula to allow transparency and to avoid computing `TP` multiple times.
+5. We will try not to reduce code repetition at the expense of transparency, flexibility and performance. Too much abstraction often makes the API complex to understand and thus becomes hard to adapt for custom use cases.                                        |
 
 # Install
 
@@ -280,7 +273,19 @@ print(np.array(epoch_losses).round(2))
 ```python
 [3.01 0.79 0.77 0.8  0.64]
 
-  0%|          | 0/5 [00:00<?, ?it/s]Loss: 3.00609981:   0%|          | 0/5 [00:00<?, ?it/s]Loss: 3.00609981:  20%|██        | 1/5 [00:00<00:02,  1.97it/s]Loss: 0.78690718:  20%|██        | 1/5 [00:00<00:02,  1.97it/s]Loss: 0.78690718:  40%|████      | 2/5 [00:00<00:00,  3.64it/s]Loss: 0.77431746:  40%|████      | 2/5 [00:00<00:00,  3.64it/s]Loss: 0.77431746:  60%|██████    | 3/5 [00:00<00:00,  4.79it/s]Loss: 0.79909155:  60%|██████    | 3/5 [00:00<00:00,  4.79it/s]Loss: 0.79909155:  80%|████████  | 4/5 [00:00<00:00,  5.12it/s]Loss: 0.64411481:  80%|████████  | 4/5 [00:01<00:00,  5.12it/s]Loss: 0.64411481: 100%|██████████| 5/5 [00:01<00:00,  5.76it/s]Loss: 0.64411481: 100%|██████████| 5/5 [00:01<00:00,  4.72it/s]
+
+  0%|          | 0/5 [00:00<?, ?it/s]
+Loss: 3.00609981:   0%|          | 0/5 [00:00<?, ?it/s]
+Loss: 3.00609981:  20%|██        | 1/5 [00:00<00:02,  1.97it/s]
+Loss: 0.78690718:  20%|██        | 1/5 [00:00<00:02,  1.97it/s]
+Loss: 0.78690718:  40%|████      | 2/5 [00:00<00:00,  3.64it/s]
+Loss: 0.77431746:  40%|████      | 2/5 [00:00<00:00,  3.64it/s]
+Loss: 0.77431746:  60%|██████    | 3/5 [00:00<00:00,  4.79it/s]
+Loss: 0.79909155:  60%|██████    | 3/5 [00:00<00:00,  4.79it/s]
+Loss: 0.79909155:  80%|████████  | 4/5 [00:00<00:00,  5.12it/s]
+Loss: 0.64411481:  80%|████████  | 4/5 [00:01<00:00,  5.12it/s]
+Loss: 0.64411481: 100%|██████████| 5/5 [00:01<00:00,  5.76it/s]
+Loss: 0.64411481: 100%|██████████| 5/5 [00:01<00:00,  4.72it/s]
 
 ```
 
@@ -339,7 +344,15 @@ print("Epoch_losses", np.array(epoch_losses).round(2))
 ```python
 Epoch_losses [9.63 7.52 6.59 4.98 4.11]
 
-  0%|          | 0/5 [00:00<?, ?it/s]Loss: 9.63069725:   0%|          | 0/5 [00:00<?, ?it/s]Loss: 9.63069725:  20%|██        | 1/5 [00:00<00:00,  6.42it/s]Loss: 7.51600790:  20%|██        | 1/5 [00:00<00:00,  6.42it/s]Loss: 6.59280062:  20%|██        | 1/5 [00:00<00:00,  6.42it/s]Loss: 4.97779894:  20%|██        | 1/5 [00:00<00:00,  6.42it/s]Loss: 4.11271286:  20%|██        | 1/5 [00:00<00:00,  6.42it/s]Loss: 4.11271286: 100%|██████████| 5/5 [00:00<00:00, 31.35it/s]
+
+  0%|          | 0/5 [00:00<?, ?it/s]
+Loss: 9.63069725:   0%|          | 0/5 [00:00<?, ?it/s]
+Loss: 9.63069725:  20%|██        | 1/5 [00:00<00:00,  6.42it/s]
+Loss: 7.51600790:  20%|██        | 1/5 [00:00<00:00,  6.42it/s]
+Loss: 6.59280062:  20%|██        | 1/5 [00:00<00:00,  6.42it/s]
+Loss: 4.97779894:  20%|██        | 1/5 [00:00<00:00,  6.42it/s]
+Loss: 4.11271286:  20%|██        | 1/5 [00:00<00:00,  6.42it/s]
+Loss: 4.11271286: 100%|██████████| 5/5 [00:00<00:00, 31.35it/s]
 
 ```
 

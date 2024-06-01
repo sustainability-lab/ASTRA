@@ -10,6 +10,9 @@ astra/_version.py
 # data directories
 data/
 
+# lab directory for experiments
+lab/
+
 # distribution directories
 dist/
 

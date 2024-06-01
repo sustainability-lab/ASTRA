@@ -21,6 +21,7 @@ from torchvision.models import densenet121, DenseNet121_Weights
 from torchvision.models import alexnet, AlexNet_Weights
 
 ## Hotfix for https://github.com/pytorch/vision/issues/7744#issuecomment-1757321451
+## Hotfix Start ###################################################################
 from torchvision.models._api import WeightsEnum
 from torch.hub import load_state_dict_from_url
 
@@ -36,7 +37,7 @@ def get_state_dict(self, *args, **kwargs):
 
 
 WeightsEnum.get_state_dict = get_state_dict
-################################################################################
+## Hotfix End #####################################################################
 
 
 # Base class for all ASTRA models
@@ -79,7 +80,9 @@ class AstraModel(nn.Module):
             return pred
 
         else:
-            raise ValueError("Either X or dataloader should be provided. This should never happen. Contact Zeel.")
+            raise ValueError(
+                "Either X or dataloader should be provided. This should never happen. Please report this issue to the developers."
+            )
 
 
 # Classifier and regressor base classes
@@ -749,3 +752,8 @@ class ViTRegressor(Regressor):
         # ViT uses fixed input size of 224 so output_dim is always 768
         regressor = MLPRegressor(768, dense_hidden_dims, output_dim, activation, dropout)
         super().__init__(featurizer, regressor)
+
+
+class NeuralPrcess(AstraModel):
+    def __init__(self, input_dim, output_dim, encoder_hidden_dims, decoder_hidden_dims):
+        pass
