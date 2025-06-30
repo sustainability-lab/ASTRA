@@ -19,12 +19,19 @@ Since `astra` is developed for research purposes, we'd try to adhere to these pr
 
 ## What we will try to do:
 1. Keep the API simple-to-use and standardized to enable quick prototyping via automated scripts.
-2. Keep the API transparent to expose as many details as possible. Explicit should be preferred over implicit.
+2. Keep the API transparent to expose as many details as possilbe. Explicit should be preferred over implicit.
 3. Keep the API flexible to allow users to stretch the limits of their experiments.
-4. Don't provide defaults at most places. This will force the user to think about the choices they are making.
 
 ## What we will try to avoid:
-5. We will try not to reduce code repetition at the expense of transparency, flexibility and performance. Too much abstraction often makes the API complex to understand and thus becomes hard to adapt for custom use cases.                                        |
+4. We will try not to reduce code repeatation at expence of transparency, flexibility and performance. Too much abstraction often makes the API complex to understand and thus becomes hard to adapt for custom use cases.
+
+## Examples
+| Points | Example |
+| --- | --- |
+| 1 and 2 | We have exactly same arguments for all strategies in `astra.torch.al.strategies` to ease the automation but we explicitely mention in the docstrings if an argument is used or ignored for a strategy. |
+| 2 | predict functions in `astra` by default put the model on `eval` mode but also allow to set `eval_mode` to `False`. This can be useful for techniques like [MC dropout](https://arxiv.org/abs/1506.02142).
+| 3 | `train_fn` from `astra.torch.utils` works for all types of models and losses which may or may not be from `astra`.
+| 4 | Though F1 score can be computed from precision and recall, we explicitely use F1 score formula to allow transparency and to avoid computing `TP` multiple times.
 
 # Install
 
@@ -55,19 +62,11 @@ print(data)
 
 ```
 ````python
-Files already downloaded and verified
-Files already downloaded and verified
 
-CIFAR-10 Dataset
-length of dataset: 60000
-shape of images: torch.Size([3, 32, 32])
-len of classes: 10
-classes: ['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
-dtype of images: torch.float32
-dtype of labels: torch.int64
-range of image values: min=0.0, max=1.0
-            
-
+Traceback (most recent call last):
+  File "/home/runner/work/ASTRA/ASTRA/quick_examples/load_data.py", line 1, in <module>
+    from astra.torch.data import load_mnist, load_cifar_10
+ModuleNotFoundError: No module named 'astra'
 
 ````
 
@@ -81,15 +80,11 @@ print(mlp)
 
 ```
 ```python
-MLPRegressor(
-  (featurizer): MLP(
-    (dropout): Dropout(p=0.1, inplace=False)
-    (input_layer): Linear(in_features=100, out_features=128, bias=True)
-    (hidden_layer_1): Linear(in_features=128, out_features=64, bias=True)
-  )
-  (regressor): Linear(in_features=64, out_features=10, bias=True)
-)
 
+Traceback (most recent call last):
+  File "/home/runner/work/ASTRA/ASTRA/quick_examples/mlp.py", line 1, in <module>
+    from astra.torch.models import MLPRegressor
+ModuleNotFoundError: No module named 'astra'
 
 ```
 
@@ -109,26 +104,11 @@ print(cnn)
 
 ```
 ```python
-CNNClassifier(
-  (featurizer): CNN(
-    (activation): ReLU()
-    (max_pool): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
-    (input_layer): Conv2d(3, 32, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
-    (hidden_layer_1): Conv2d(32, 64, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
-    (aggregator): Identity()
-    (flatten): Flatten(start_dim=1, end_dim=-1)
-  )
-  (classifier): MLPClassifier(
-    (featurizer): MLP(
-      (activation): ReLU()
-      (dropout): Dropout(p=0.0, inplace=False)
-      (input_layer): Linear(in_features=4096, out_features=128, bias=True)
-      (hidden_layer_1): Linear(in_features=128, out_features=64, bias=True)
-    )
-    (classifier): Linear(in_features=64, out_features=10, bias=True)
-  )
-)
 
+Traceback (most recent call last):
+  File "/home/runner/work/ASTRA/ASTRA/quick_examples/cnn.py", line 1, in <module>
+    from astra.torch.models import CNNClassifier
+ModuleNotFoundError: No module named 'astra'
 
 ```
 
@@ -149,8 +129,11 @@ print(out.shape)
 
 ```
 ```python
-torch.Size([10, 10])
 
+Traceback (most recent call last):
+  File "/home/runner/work/ASTRA/ASTRA/quick_examples/efficientnet.py", line 1, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'
 
 ```
 
@@ -168,8 +151,11 @@ print(out.shape)
 
 ```
 ```python
-torch.Size([10, 10])
 
+Traceback (most recent call last):
+  File "/home/runner/work/ASTRA/ASTRA/quick_examples/vit.py", line 1, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'
 
 ```
 
@@ -230,10 +216,11 @@ print(np.array(epoch_losses).round(2))
 
 ```
 ```python
-[0.72 0.7  0.7  0.7  0.7 ]
-[1.   0.84 0.7  0.58 0.48]
-[0.4  0.33 0.29 0.26 0.25]
 
+Traceback (most recent call last):
+  File "/home/runner/work/ASTRA/ASTRA/quick_examples/quick_train.py", line 1, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'
 
 ```
 
@@ -271,21 +258,11 @@ print(np.array(epoch_losses).round(2))
 
 ```
 ```python
-[3.01 0.79 0.77 0.8  0.64]
 
-
-  0%|          | 0/5 [00:00<?, ?it/s]
-Loss: 3.00609981:   0%|          | 0/5 [00:00<?, ?it/s]
-Loss: 3.00609981:  20%|██        | 1/5 [00:00<00:02,  1.97it/s]
-Loss: 0.78690718:  20%|██        | 1/5 [00:00<00:02,  1.97it/s]
-Loss: 0.78690718:  40%|████      | 2/5 [00:00<00:00,  3.64it/s]
-Loss: 0.77431746:  40%|████      | 2/5 [00:00<00:00,  3.64it/s]
-Loss: 0.77431746:  60%|██████    | 3/5 [00:00<00:00,  4.79it/s]
-Loss: 0.79909155:  60%|██████    | 3/5 [00:00<00:00,  4.79it/s]
-Loss: 0.79909155:  80%|████████  | 4/5 [00:00<00:00,  5.12it/s]
-Loss: 0.64411481:  80%|████████  | 4/5 [00:01<00:00,  5.12it/s]
-Loss: 0.64411481: 100%|██████████| 5/5 [00:01<00:00,  5.76it/s]
-Loss: 0.64411481: 100%|██████████| 5/5 [00:01<00:00,  4.72it/s]
+Traceback (most recent call last):
+  File "/home/runner/work/ASTRA/ASTRA/quick_examples/train_with_dataloader.py", line 1, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'
 
 ```
 
@@ -342,17 +319,11 @@ print("Epoch_losses", np.array(epoch_losses).round(2))
 
 ```
 ```python
-Epoch_losses [9.63 7.52 6.59 4.98 4.11]
 
-
-  0%|          | 0/5 [00:00<?, ?it/s]
-Loss: 9.63069725:   0%|          | 0/5 [00:00<?, ?it/s]
-Loss: 9.63069725:  20%|██        | 1/5 [00:00<00:00,  6.42it/s]
-Loss: 7.51600790:  20%|██        | 1/5 [00:00<00:00,  6.42it/s]
-Loss: 6.59280062:  20%|██        | 1/5 [00:00<00:00,  6.42it/s]
-Loss: 4.97779894:  20%|██        | 1/5 [00:00<00:00,  6.42it/s]
-Loss: 4.11271286:  20%|██        | 1/5 [00:00<00:00,  6.42it/s]
-Loss: 4.11271286: 100%|██████████| 5/5 [00:00<00:00, 31.35it/s]
+Traceback (most recent call last):
+  File "/home/runner/work/ASTRA/ASTRA/quick_examples/advanced_train.py", line 1, in <module>
+    import torch
+ModuleNotFoundError: No module named 'torch'
 
 ```
 
@@ -370,7 +341,10 @@ print(n_params)
 
 ```
 ```python
-{'total_params': 58, 'trainable_params': 58, 'non_trainable_params': 0}
 
+Traceback (most recent call last):
+  File "/home/runner/work/ASTRA/ASTRA/quick_examples/count_params.py", line 1, in <module>
+    from astra.torch.utils import count_params
+ModuleNotFoundError: No module named 'astra'
 
 ```
