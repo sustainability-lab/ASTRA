@@ -41,9 +41,70 @@ print(data)
 ````python
 
 Traceback (most recent call last):
-  File "/home/runner/work/ASTRA/ASTRA/quick_examples/load_data.py", line 1, in <module>
-    from astra.torch.data import load_mnist, load_cifar_10
-ModuleNotFoundError: No module named 'astra'
+  File "/usr/lib/python3.12/urllib/request.py", line 1344, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+  File "/usr/lib/python3.12/http/client.py", line 1336, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1382, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "/usr/lib/python3.12/http/client.py", line 1091, in _send_output
+    self.send(msg)
+  File "/usr/lib/python3.12/http/client.py", line 1035, in send
+    self.connect()
+  File "/usr/lib/python3.12/http/client.py", line 1470, in connect
+    super().connect()
+  File "/usr/lib/python3.12/http/client.py", line 1001, in connect
+    self.sock = self._create_connection(
+                ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/socket.py", line 828, in create_connection
+    for res in getaddrinfo(host, port, 0, SOCK_STREAM):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/socket.py", line 963, in getaddrinfo
+    for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+socket.gaierror: [Errno -3] Temporary failure in name resolution
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/work/ASTRA/ASTRA/quick_examples/load_data.py", line 3, in <module>
+    data = load_cifar_10()
+           ^^^^^^^^^^^^^^^
+  File "/home/runner/work/ASTRA/ASTRA/astra/torch/data.py", line 52, in load_cifar_10
+    cfar_10_train = datasets.CIFAR10(root=f"{os.environ['TORCH_HOME']}/data", train=True, download=True)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/torchvision/datasets/cifar.py", line 66, in __init__
+    self.download()
+  File "/home/runner/.local/lib/python3.12/site-packages/torchvision/datasets/cifar.py", line 139, in download
+    download_and_extract_archive(self.url, self.root, filename=self.filename, md5=self.tgz_md5)
+  File "/home/runner/.local/lib/python3.12/site-packages/torchvision/datasets/utils.py", line 391, in download_and_extract_archive
+    download_url(url, download_root, filename, md5)
+  File "/home/runner/.local/lib/python3.12/site-packages/torchvision/datasets/utils.py", line 121, in download_url
+    url = _get_redirect_url(url, max_hops=max_redirect_hops)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/torchvision/datasets/utils.py", line 66, in _get_redirect_url
+    with urllib.request.urlopen(urllib.request.Request(url, headers=headers)) as response:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 215, in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 515, in open
+    response = self._open(req, data)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 532, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 492, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 1392, in https_open
+    return self.do_open(http.client.HTTPSConnection, req,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/urllib/request.py", line 1347, in do_open
+    raise URLError(err)
+urllib.error.URLError: <urlopen error [Errno -3] Temporary failure in name resolution>
 
 ````
 
@@ -61,7 +122,35 @@ print(mlp)
 Traceback (most recent call last):
   File "/home/runner/work/ASTRA/ASTRA/quick_examples/mlp.py", line 1, in <module>
     from astra.torch.models import MLPRegressor
-ModuleNotFoundError: No module named 'astra'
+  File "/home/runner/work/ASTRA/ASTRA/astra/torch/models.py", line 30, in <module>
+    from astra.torch.utils import get_model_device
+  File "/home/runner/work/ASTRA/ASTRA/astra/torch/utils.py", line 1, in <module>
+    import wandb
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/__init__.py", line 22, in <module>
+    from wandb.sdk.lib import wb_logging as _wb_logging
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/__init__.py", line 25, in <module>
+    from .artifacts.artifact import Artifact
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/artifacts/artifact.py", line 30, in <module>
+    from wandb import data_types, env
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/data_types.py", line 16, in <module>
+    from .sdk.data_types.audio import Audio
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/data_types/audio.py", line 11, in <module>
+    from .base_types.media import BatchableMedia
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/data_types/base_types/media.py", line 14, in <module>
+    from .wb_value import WBValue
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/data_types/base_types/wb_value.py", line 4, in <module>
+    from wandb.sdk import wandb_setup
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/wandb_setup.py", line 38, in <module>
+    from . import wandb_settings
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/wandb_settings.py", line 23, in <module>
+    from pydantic import BaseModel, ConfigDict, Field
+  File "/home/runner/.local/lib/python3.12/site-packages/pydantic-2.11.7-py3.12.egg/pydantic/__init__.py", line 5, in <module>
+    from ._migration import getattr_migration
+  File "/home/runner/.local/lib/python3.12/site-packages/pydantic-2.11.7-py3.12.egg/pydantic/_migration.py", line 4, in <module>
+    from .version import version_short
+  File "/home/runner/.local/lib/python3.12/site-packages/pydantic-2.11.7-py3.12.egg/pydantic/version.py", line 5, in <module>
+    from pydantic_core import __version__ as __pydantic_core_version__
+ModuleNotFoundError: No module named 'pydantic_core'
 
 ```
 
@@ -85,7 +174,35 @@ print(cnn)
 Traceback (most recent call last):
   File "/home/runner/work/ASTRA/ASTRA/quick_examples/cnn.py", line 1, in <module>
     from astra.torch.models import CNNClassifier
-ModuleNotFoundError: No module named 'astra'
+  File "/home/runner/work/ASTRA/ASTRA/astra/torch/models.py", line 30, in <module>
+    from astra.torch.utils import get_model_device
+  File "/home/runner/work/ASTRA/ASTRA/astra/torch/utils.py", line 1, in <module>
+    import wandb
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/__init__.py", line 22, in <module>
+    from wandb.sdk.lib import wb_logging as _wb_logging
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/__init__.py", line 25, in <module>
+    from .artifacts.artifact import Artifact
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/artifacts/artifact.py", line 30, in <module>
+    from wandb import data_types, env
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/data_types.py", line 16, in <module>
+    from .sdk.data_types.audio import Audio
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/data_types/audio.py", line 11, in <module>
+    from .base_types.media import BatchableMedia
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/data_types/base_types/media.py", line 14, in <module>
+    from .wb_value import WBValue
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/data_types/base_types/wb_value.py", line 4, in <module>
+    from wandb.sdk import wandb_setup
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/wandb_setup.py", line 38, in <module>
+    from . import wandb_settings
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/wandb_settings.py", line 23, in <module>
+    from pydantic import BaseModel, ConfigDict, Field
+  File "/home/runner/.local/lib/python3.12/site-packages/pydantic-2.11.7-py3.12.egg/pydantic/__init__.py", line 5, in <module>
+    from ._migration import getattr_migration
+  File "/home/runner/.local/lib/python3.12/site-packages/pydantic-2.11.7-py3.12.egg/pydantic/_migration.py", line 4, in <module>
+    from .version import version_short
+  File "/home/runner/.local/lib/python3.12/site-packages/pydantic-2.11.7-py3.12.egg/pydantic/version.py", line 5, in <module>
+    from pydantic_core import __version__ as __pydantic_core_version__
+ModuleNotFoundError: No module named 'pydantic_core'
 
 ```
 
@@ -108,9 +225,37 @@ print(out.shape)
 ```python
 
 Traceback (most recent call last):
-  File "/home/runner/work/ASTRA/ASTRA/quick_examples/efficientnet.py", line 1, in <module>
-    import torch
-ModuleNotFoundError: No module named 'torch'
+  File "/home/runner/work/ASTRA/ASTRA/quick_examples/efficientnet.py", line 3, in <module>
+    from astra.torch.models import EfficientNetClassifier
+  File "/home/runner/work/ASTRA/ASTRA/astra/torch/models.py", line 30, in <module>
+    from astra.torch.utils import get_model_device
+  File "/home/runner/work/ASTRA/ASTRA/astra/torch/utils.py", line 1, in <module>
+    import wandb
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/__init__.py", line 22, in <module>
+    from wandb.sdk.lib import wb_logging as _wb_logging
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/__init__.py", line 25, in <module>
+    from .artifacts.artifact import Artifact
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/artifacts/artifact.py", line 30, in <module>
+    from wandb import data_types, env
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/data_types.py", line 16, in <module>
+    from .sdk.data_types.audio import Audio
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/data_types/audio.py", line 11, in <module>
+    from .base_types.media import BatchableMedia
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/data_types/base_types/media.py", line 14, in <module>
+    from .wb_value import WBValue
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/data_types/base_types/wb_value.py", line 4, in <module>
+    from wandb.sdk import wandb_setup
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/wandb_setup.py", line 38, in <module>
+    from . import wandb_settings
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/wandb_settings.py", line 23, in <module>
+    from pydantic import BaseModel, ConfigDict, Field
+  File "/home/runner/.local/lib/python3.12/site-packages/pydantic-2.11.7-py3.12.egg/pydantic/__init__.py", line 5, in <module>
+    from ._migration import getattr_migration
+  File "/home/runner/.local/lib/python3.12/site-packages/pydantic-2.11.7-py3.12.egg/pydantic/_migration.py", line 4, in <module>
+    from .version import version_short
+  File "/home/runner/.local/lib/python3.12/site-packages/pydantic-2.11.7-py3.12.egg/pydantic/version.py", line 5, in <module>
+    from pydantic_core import __version__ as __pydantic_core_version__
+ModuleNotFoundError: No module named 'pydantic_core'
 
 ```
 
@@ -130,9 +275,37 @@ print(out.shape)
 ```python
 
 Traceback (most recent call last):
-  File "/home/runner/work/ASTRA/ASTRA/quick_examples/vit.py", line 1, in <module>
-    import torch
-ModuleNotFoundError: No module named 'torch'
+  File "/home/runner/work/ASTRA/ASTRA/quick_examples/vit.py", line 3, in <module>
+    from astra.torch.models import ViTClassifier
+  File "/home/runner/work/ASTRA/ASTRA/astra/torch/models.py", line 30, in <module>
+    from astra.torch.utils import get_model_device
+  File "/home/runner/work/ASTRA/ASTRA/astra/torch/utils.py", line 1, in <module>
+    import wandb
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/__init__.py", line 22, in <module>
+    from wandb.sdk.lib import wb_logging as _wb_logging
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/__init__.py", line 25, in <module>
+    from .artifacts.artifact import Artifact
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/artifacts/artifact.py", line 30, in <module>
+    from wandb import data_types, env
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/data_types.py", line 16, in <module>
+    from .sdk.data_types.audio import Audio
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/data_types/audio.py", line 11, in <module>
+    from .base_types.media import BatchableMedia
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/data_types/base_types/media.py", line 14, in <module>
+    from .wb_value import WBValue
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/data_types/base_types/wb_value.py", line 4, in <module>
+    from wandb.sdk import wandb_setup
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/wandb_setup.py", line 38, in <module>
+    from . import wandb_settings
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/wandb_settings.py", line 23, in <module>
+    from pydantic import BaseModel, ConfigDict, Field
+  File "/home/runner/.local/lib/python3.12/site-packages/pydantic-2.11.7-py3.12.egg/pydantic/__init__.py", line 5, in <module>
+    from ._migration import getattr_migration
+  File "/home/runner/.local/lib/python3.12/site-packages/pydantic-2.11.7-py3.12.egg/pydantic/_migration.py", line 4, in <module>
+    from .version import version_short
+  File "/home/runner/.local/lib/python3.12/site-packages/pydantic-2.11.7-py3.12.egg/pydantic/version.py", line 5, in <module>
+    from pydantic_core import __version__ as __pydantic_core_version__
+ModuleNotFoundError: No module named 'pydantic_core'
 
 ```
 
@@ -195,9 +368,35 @@ print(np.array(epoch_losses).round(2))
 ```python
 
 Traceback (most recent call last):
-  File "/home/runner/work/ASTRA/ASTRA/quick_examples/quick_train.py", line 1, in <module>
-    import torch
-ModuleNotFoundError: No module named 'torch'
+  File "/home/runner/work/ASTRA/ASTRA/quick_examples/quick_train.py", line 4, in <module>
+    from astra.torch.utils import train_fn
+  File "/home/runner/work/ASTRA/ASTRA/astra/torch/utils.py", line 1, in <module>
+    import wandb
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/__init__.py", line 22, in <module>
+    from wandb.sdk.lib import wb_logging as _wb_logging
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/__init__.py", line 25, in <module>
+    from .artifacts.artifact import Artifact
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/artifacts/artifact.py", line 30, in <module>
+    from wandb import data_types, env
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/data_types.py", line 16, in <module>
+    from .sdk.data_types.audio import Audio
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/data_types/audio.py", line 11, in <module>
+    from .base_types.media import BatchableMedia
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/data_types/base_types/media.py", line 14, in <module>
+    from .wb_value import WBValue
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/data_types/base_types/wb_value.py", line 4, in <module>
+    from wandb.sdk import wandb_setup
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/wandb_setup.py", line 38, in <module>
+    from . import wandb_settings
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/wandb_settings.py", line 23, in <module>
+    from pydantic import BaseModel, ConfigDict, Field
+  File "/home/runner/.local/lib/python3.12/site-packages/pydantic-2.11.7-py3.12.egg/pydantic/__init__.py", line 5, in <module>
+    from ._migration import getattr_migration
+  File "/home/runner/.local/lib/python3.12/site-packages/pydantic-2.11.7-py3.12.egg/pydantic/_migration.py", line 4, in <module>
+    from .version import version_short
+  File "/home/runner/.local/lib/python3.12/site-packages/pydantic-2.11.7-py3.12.egg/pydantic/version.py", line 5, in <module>
+    from pydantic_core import __version__ as __pydantic_core_version__
+ModuleNotFoundError: No module named 'pydantic_core'
 
 ```
 
@@ -237,9 +436,35 @@ print(np.array(epoch_losses).round(2))
 ```python
 
 Traceback (most recent call last):
-  File "/home/runner/work/ASTRA/ASTRA/quick_examples/train_with_dataloader.py", line 1, in <module>
-    import torch
-ModuleNotFoundError: No module named 'torch'
+  File "/home/runner/work/ASTRA/ASTRA/quick_examples/train_with_dataloader.py", line 6, in <module>
+    from astra.torch.utils import train_fn
+  File "/home/runner/work/ASTRA/ASTRA/astra/torch/utils.py", line 1, in <module>
+    import wandb
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/__init__.py", line 22, in <module>
+    from wandb.sdk.lib import wb_logging as _wb_logging
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/__init__.py", line 25, in <module>
+    from .artifacts.artifact import Artifact
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/artifacts/artifact.py", line 30, in <module>
+    from wandb import data_types, env
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/data_types.py", line 16, in <module>
+    from .sdk.data_types.audio import Audio
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/data_types/audio.py", line 11, in <module>
+    from .base_types.media import BatchableMedia
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/data_types/base_types/media.py", line 14, in <module>
+    from .wb_value import WBValue
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/data_types/base_types/wb_value.py", line 4, in <module>
+    from wandb.sdk import wandb_setup
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/wandb_setup.py", line 38, in <module>
+    from . import wandb_settings
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/wandb_settings.py", line 23, in <module>
+    from pydantic import BaseModel, ConfigDict, Field
+  File "/home/runner/.local/lib/python3.12/site-packages/pydantic-2.11.7-py3.12.egg/pydantic/__init__.py", line 5, in <module>
+    from ._migration import getattr_migration
+  File "/home/runner/.local/lib/python3.12/site-packages/pydantic-2.11.7-py3.12.egg/pydantic/_migration.py", line 4, in <module>
+    from .version import version_short
+  File "/home/runner/.local/lib/python3.12/site-packages/pydantic-2.11.7-py3.12.egg/pydantic/version.py", line 5, in <module>
+    from pydantic_core import __version__ as __pydantic_core_version__
+ModuleNotFoundError: No module named 'pydantic_core'
 
 ```
 
@@ -298,9 +523,35 @@ print("Epoch_losses", np.array(epoch_losses).round(2))
 ```python
 
 Traceback (most recent call last):
-  File "/home/runner/work/ASTRA/ASTRA/quick_examples/advanced_train.py", line 1, in <module>
-    import torch
-ModuleNotFoundError: No module named 'torch'
+  File "/home/runner/work/ASTRA/ASTRA/quick_examples/advanced_train.py", line 4, in <module>
+    from astra.torch.utils import train_fn
+  File "/home/runner/work/ASTRA/ASTRA/astra/torch/utils.py", line 1, in <module>
+    import wandb
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/__init__.py", line 22, in <module>
+    from wandb.sdk.lib import wb_logging as _wb_logging
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/__init__.py", line 25, in <module>
+    from .artifacts.artifact import Artifact
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/artifacts/artifact.py", line 30, in <module>
+    from wandb import data_types, env
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/data_types.py", line 16, in <module>
+    from .sdk.data_types.audio import Audio
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/data_types/audio.py", line 11, in <module>
+    from .base_types.media import BatchableMedia
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/data_types/base_types/media.py", line 14, in <module>
+    from .wb_value import WBValue
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/data_types/base_types/wb_value.py", line 4, in <module>
+    from wandb.sdk import wandb_setup
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/wandb_setup.py", line 38, in <module>
+    from . import wandb_settings
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/wandb_settings.py", line 23, in <module>
+    from pydantic import BaseModel, ConfigDict, Field
+  File "/home/runner/.local/lib/python3.12/site-packages/pydantic-2.11.7-py3.12.egg/pydantic/__init__.py", line 5, in <module>
+    from ._migration import getattr_migration
+  File "/home/runner/.local/lib/python3.12/site-packages/pydantic-2.11.7-py3.12.egg/pydantic/_migration.py", line 4, in <module>
+    from .version import version_short
+  File "/home/runner/.local/lib/python3.12/site-packages/pydantic-2.11.7-py3.12.egg/pydantic/version.py", line 5, in <module>
+    from pydantic_core import __version__ as __pydantic_core_version__
+ModuleNotFoundError: No module named 'pydantic_core'
 
 ```
 
@@ -322,7 +573,33 @@ print(n_params)
 Traceback (most recent call last):
   File "/home/runner/work/ASTRA/ASTRA/quick_examples/count_params.py", line 1, in <module>
     from astra.torch.utils import count_params
-ModuleNotFoundError: No module named 'astra'
+  File "/home/runner/work/ASTRA/ASTRA/astra/torch/utils.py", line 1, in <module>
+    import wandb
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/__init__.py", line 22, in <module>
+    from wandb.sdk.lib import wb_logging as _wb_logging
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/__init__.py", line 25, in <module>
+    from .artifacts.artifact import Artifact
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/artifacts/artifact.py", line 30, in <module>
+    from wandb import data_types, env
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/data_types.py", line 16, in <module>
+    from .sdk.data_types.audio import Audio
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/data_types/audio.py", line 11, in <module>
+    from .base_types.media import BatchableMedia
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/data_types/base_types/media.py", line 14, in <module>
+    from .wb_value import WBValue
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/data_types/base_types/wb_value.py", line 4, in <module>
+    from wandb.sdk import wandb_setup
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/wandb_setup.py", line 38, in <module>
+    from . import wandb_settings
+  File "/home/runner/.local/lib/python3.12/site-packages/wandb-0.20.2rc20250616-py3.12.egg/wandb/sdk/wandb_settings.py", line 23, in <module>
+    from pydantic import BaseModel, ConfigDict, Field
+  File "/home/runner/.local/lib/python3.12/site-packages/pydantic-2.11.7-py3.12.egg/pydantic/__init__.py", line 5, in <module>
+    from ._migration import getattr_migration
+  File "/home/runner/.local/lib/python3.12/site-packages/pydantic-2.11.7-py3.12.egg/pydantic/_migration.py", line 4, in <module>
+    from .version import version_short
+  File "/home/runner/.local/lib/python3.12/site-packages/pydantic-2.11.7-py3.12.egg/pydantic/version.py", line 5, in <module>
+    from pydantic_core import __version__ as __pydantic_core_version__
+ModuleNotFoundError: No module named 'pydantic_core'
 
 ```
 
